@@ -3,6 +3,6 @@
 ../External_Libs/user_custom.c:35:6:uReadBit	1
 ../External_Libs/user_custom.c:38:10:uSetBit	1
 ../External_Libs/user_custom.c:42:10:uClearBit	1
-../External_Libs/user_custom.c:55:6:detectFlagRisingEdge	3
-../External_Libs/user_custom.c:71:6:detectFlagFallingEdge	3
+../External_Libs/user_custom.c:56:6:detectFlagRisingEdge	3
+../External_Libs/user_custom.c:72:6:detectFlagFallingEdge	3
 ../External_Libs/user_custom.c:79:6:toggleValueState	2

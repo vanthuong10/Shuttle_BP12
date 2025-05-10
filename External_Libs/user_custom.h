@@ -20,8 +20,8 @@ bool u_timer_expired(uint64_t *t, uint64_t prd, uint64_t now);
 bool uReadBit(uint16_t value, uint8_t position);
 uint16_t uSetBit(uint16_t value, uint8_t position);
 uint16_t uClearBit(uint16_t value, uint8_t position);
-bool detectFlagRisingEdge(bool currentState);
-bool detectFlagFallingEdge(bool currentState);
+bool detectFlagRisingEdge(bool currentState, bool *st);
+bool detectFlagFallingEdge(bool currentState, bool *st);
 bool toggleValueState(double *p ,double vl);
 #ifdef __cplusplus
 }

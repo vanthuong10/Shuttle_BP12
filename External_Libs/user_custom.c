@@ -50,13 +50,13 @@ uint16_t uClearBit(uint16_t value, uint8_t position) {
  * và trả về true nếu phát hiện sự chuyển từ trạng thái xung cạnh lên.
  *
  * @param currentState Trạng thái hiện tại của cờ.
+ * @param st : con trỏ tới cờ lưu trạng thái
  * @return true nếu phát hiện xung cạnh lên, false nếu không.
  */
-bool detectFlagRisingEdge(bool currentState)
+bool detectFlagRisingEdge(bool currentState, bool *st)
 {
-    static bool lastState = false;
-    bool risingEdge = (currentState && !lastState);
-    lastState = currentState;
+    bool risingEdge = (currentState && !*st);
+    *st = currentState;
     return risingEdge;
 }
 /**
@@ -66,13 +66,13 @@ bool detectFlagRisingEdge(bool currentState)
  * và trả về true nếu phát hiện sự chuyển từ trạng thái xung cạnh xuống.
  *
  * @param currentState Trạng thái hiện tại của cờ.
+ * @param st:  con trỏ tới cờ lưu trạng thái
  * @return true nếu phát hiện xung cạnh xuống, false nếu không.
  */
-bool detectFlagFallingEdge(bool currentState)
+bool detectFlagFallingEdge(bool currentState, bool *st)
 {
-    static bool lastState = false;
-    bool fallingEdge = (!currentState && lastState);
-    lastState = currentState;
+    bool fallingEdge = (!currentState && *st);
+    *st = currentState;
     return fallingEdge;
 }
 // p : disappear memory vl: current value

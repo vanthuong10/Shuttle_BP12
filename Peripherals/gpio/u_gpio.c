@@ -10,15 +10,15 @@
 *
 *            Edit Port and gpioPin parameters according to hardware connection
 */
-DoHandle outputGpio = { .resetDriver  = {.Port = GPIOF , .gpioPin = GPIO_PIN_5 },
-						.fan		  = {.Port = GPIOF , .gpioPin = GPIO_PIN_3 },
+DoHandle outputGpio = { .resetDriver  = {.Port = GPIOF , .gpioPin = GPIO_PIN_5  },
+						.fan		  = {.Port = GPIOF , .gpioPin = GPIO_PIN_3  },
 						.buzzer 	  = {.Port = GPIOI , .gpioPin = GPIO_PIN_11 },
 						.charger      = {.Port = GPIOI , .gpioPin = GPIO_PIN_10 },
 						.pump		  = {.Port = GPIOF , .gpioPin = GPIO_PIN_14 },
-						.valveL1	  = {.Port = GPIOI , .gpioPin = GPIO_PIN_8 },
+						.valveL1	  = {.Port = GPIOI , .gpioPin = GPIO_PIN_8  },
 						.valveL2	  = {.Port = GPIOG , .gpioPin = GPIO_PIN_15 },
-						.valveL3	  = {.Port = GPIOK , .gpioPin = GPIO_PIN_4 },
-						.brake  	  = {.Port = GPIOB , .gpioPin = GPIO_PIN_8 }};
+						.valveL3	  = {.Port = GPIOK , .gpioPin = GPIO_PIN_4  },
+						.brake  	  = {.Port = GPIOB , .gpioPin = GPIO_PIN_8  }};
 
 
 /* @brief     Configure input signal pins

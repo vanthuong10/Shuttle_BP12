@@ -18,7 +18,7 @@ extern "C" {
 #include "QrReader.h"
 #include "dalySmartBms.h"
 #include "MotorControl.h"
-#define TEMPERATURE_RUN_FAN 28
+#define TEMPERATURE_RUN_FAN 35
 #define SHUTTLE_DEC 0.06  // m/s²
 #define SHUTTLE_ACC 0.1 // m/s²
 #define SHUTTLE_SLOW_ACC 0.005 // m/s²

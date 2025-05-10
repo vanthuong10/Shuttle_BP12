@@ -22,6 +22,7 @@ static bool hydraulic_wait = false ;
 static bool hydraulic_is_overtime = false ;
 static bool hydraulic_is_overload = false;
 static bool hydraulic_emg = false;
+static bool triger_flag[4];
 static CylinderState hydraulic_state = CYLINDER_OFF ;
 static struct DriverPump driverPump;
 
@@ -88,7 +89,6 @@ void pumpSet(uint16_t add_reg, uint16_t val)
     uint16_t crc = crc16_modbus(driverPump.txData, 6);   // Compute CRC for the first 6 bytes
     driverPump.txData[6] = crc & 0xFF;                  // CRC Low Byte
     driverPump.txData[7] = (crc >> 8) & 0xFF;           // CRC High Byte
-
     HAL_UART_Transmit(driverPump.Serial, driverPump.txData, 8, 100);
 }
 
@@ -124,7 +124,10 @@ void hydraulicSetState(struct HydraulicTableControl state) {
         HAL_GPIO_WritePin(outputGpio.valveL1.Port, outputGpio.valveL1.gpioPin, (GPIO_PinState) state.valve1);
         HAL_GPIO_WritePin(outputGpio.pump.Port, outputGpio.pump.gpioPin, (GPIO_PinState) state.pump);
     	mcp4922.setDAC(600,600);
-    	pumpSet(PUMP_ENABLE_REG, 1);
+		if (!triger_flag[1]) {
+			pumpSet(PUMP_ENABLE_REG, 1);
+			triger_flag[1] = true ;
+		}
     }else
     {
     	osSemaphoreRelease(pumpSemaphoreHandle); // Giải phóng semaphore khi tắt bơm
@@ -134,7 +137,7 @@ void hydraulicSetState(struct HydraulicTableControl state) {
 bool controlCylinder(CylinderState cmd, bool en )
 {
 	if(hydraulic_emg) en = false ;   // nếu emg không chạy bơm
-	if(detectFlagRisingEdge(en)) { timer_error_hydarulic = 0 ; timer_wait_hydraulic = 0 ; hydraulic_wait = false ;}  // Reset lại timer mỗi lần chạy bơm
+	if(detectFlagRisingEdge(en, &triger_flag[0])) { timer_error_hydarulic = 0 ; timer_wait_hydraulic = 0 ; hydraulic_wait = false ;}  // Reset lại timer mỗi lần chạy bơm
 	bool state = false;
 	uint64_t now = (uint64_t) ((osKernelGetTickCount() * 1000) / osKernelGetTickFreq());
 	if(!en || hydraulic_is_overload || hydraulic_is_overtime) {
@@ -143,7 +146,7 @@ bool controlCylinder(CylinderState cmd, bool en )
 		return false ;
 	}
 	if(u_timer_expired(&timer_wait_hydraulic, 1000, now))	{ hydraulic_wait = true ; }
-	if(!hydraulic_wait && sensor_signal.di_sensor.SelectMode) return false ; /// chế độ manual không chờ
+	if(!hydraulic_wait && sensor_signal.di_sensor.SelectMode) return false ; //chế độ manual không chờ
 	switch (cmd) {
 		case CYLINDER_OFF:
 			hydraulicSetState(free_all_state);
@@ -240,7 +243,11 @@ static void hydraulicOffTask(void *argument) {
             HAL_GPIO_WritePin(outputGpio.pump.Port, outputGpio.pump.gpioPin, GPIO_PIN_RESET);  // tắt bơm
             HAL_GPIO_WritePin(outputGpio.valveL1.Port, outputGpio.valveL1.gpioPin, GPIO_PIN_RESET); // tắt van L1
             mcp4922.setDAC(0,0);
-            pumpSet(PUMP_ENABLE_REG, 0);
+            if(triger_flag[1])
+            {
+                pumpSet(PUMP_ENABLE_REG, 0);
+                triger_flag[1] = false;
+            }
         }
     }
 }
