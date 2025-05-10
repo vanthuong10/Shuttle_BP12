@@ -1,0 +1,5 @@
+../Application/Main_Program/Manual/manual.c:27:6:Manualtask	12
+../Application/Main_Program/Manual/manual.c:88:6:resetManualMode	1
+../Application/Main_Program/Manual/manual.c:94:6:manualTaskInit	3
+../Application/Main_Program/Manual/manual.c:102:6:manualTaskSupend	3
+../Application/Main_Program/Manual/manual.c:111:6:manualTaskResume	2

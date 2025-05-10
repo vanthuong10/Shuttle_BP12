@@ -1,0 +1,2 @@
+../Peripherals/adc/MCP3208.c:11:6:_begin	24	static
+../Peripherals/adc/MCP3208.c:18:10:_readChannel	40	static

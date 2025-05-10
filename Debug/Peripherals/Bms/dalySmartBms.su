@@ -1,0 +1,13 @@
+../Peripherals/Bms/dalySmartBms.c:12:6:bmsInit	16	static
+../Peripherals/Bms/dalySmartBms.c:18:6:bmsContinute	8	static
+../Peripherals/Bms/dalySmartBms.c:23:6:bmsRequestData	24	static
+../Peripherals/Bms/dalySmartBms.c:40:7:bmsGetVoltage	16	static
+../Peripherals/Bms/dalySmartBms.c:49:7:bmsGetCrurrent	16	static
+../Peripherals/Bms/dalySmartBms.c:63:7:bmsGetSOC	16	static
+../Peripherals/Bms/dalySmartBms.c:71:10:bmsGetSOH	16	static
+../Peripherals/Bms/dalySmartBms.c:80:7:bmsGetAmbientTemperature	16	static
+../Peripherals/Bms/dalySmartBms.c:92:9:bmsGetChargeStaus	16	static
+../Peripherals/Bms/dalySmartBms.c:98:7:bmsGetRemaningCapacity	16	static
+../Peripherals/Bms/dalySmartBms.c:107:10:bmsGetCycleTime	16	static
+../Peripherals/Bms/dalySmartBms.c:114:10:bmsGetPower	16	static
+../Peripherals/Bms/dalySmartBms.c:120:10:bmsGetEnergy	16	static

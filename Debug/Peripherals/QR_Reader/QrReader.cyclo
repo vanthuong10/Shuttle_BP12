@@ -1,0 +1,6 @@
+../Peripherals/QR_Reader/QrReader.c:29:6:threadQr	2
+../Peripherals/QR_Reader/QrReader.c:44:6:qrInit	1
+../Peripherals/QR_Reader/QrReader.c:59:6:qrEventData	5
+../Peripherals/QR_Reader/QrReader.c:77:6:get_substring_between_newlines	3
+../Peripherals/QR_Reader/QrReader.c:90:6:parse_string	5
+../Peripherals/QR_Reader/QrReader.c:126:6:checkQrcode	1

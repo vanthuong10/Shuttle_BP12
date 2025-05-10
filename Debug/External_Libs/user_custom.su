@@ -1,0 +1,8 @@
+../External_Libs/user_custom.c:9:10:crc16_modbus	32	static
+../External_Libs/user_custom.c:27:6:u_timer_expired	56	static
+../External_Libs/user_custom.c:35:6:uReadBit	16	static
+../External_Libs/user_custom.c:38:10:uSetBit	16	static
+../External_Libs/user_custom.c:42:10:uClearBit	16	static
+../External_Libs/user_custom.c:55:6:detectFlagRisingEdge	24	static
+../External_Libs/user_custom.c:71:6:detectFlagFallingEdge	24	static
+../External_Libs/user_custom.c:79:6:toggleValueState	24	static

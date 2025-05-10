@@ -1,0 +1,6 @@
+../Peripherals/QR_Reader/QrReader.c:29:6:threadQr	24	static
+../Peripherals/QR_Reader/QrReader.c:44:6:qrInit	8	static
+../Peripherals/QR_Reader/QrReader.c:59:6:qrEventData	24	static
+../Peripherals/QR_Reader/QrReader.c:77:6:get_substring_between_newlines	32	static
+../Peripherals/QR_Reader/QrReader.c:90:6:parse_string	24	static
+../Peripherals/QR_Reader/QrReader.c:126:6:checkQrcode	16	static

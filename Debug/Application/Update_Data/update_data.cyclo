@@ -1,0 +1,5 @@
+../Application/Update_Data/update_data.c:21:13:getInfoBatery	1
+../Application/Update_Data/update_data.c:33:13:getInfoQrReader	1
+../Application/Update_Data/update_data.c:39:6:ws_transmit_timer	4
+../Application/Update_Data/update_data.c:112:13:inforUpdatetask	3
+../Application/Update_Data/update_data.c:161:6:dataUpdateTaskInit	1

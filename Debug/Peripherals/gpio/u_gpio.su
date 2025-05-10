@@ -1,0 +1,10 @@
+../Peripherals/gpio/u_gpio.c:65:6:DigitalSensorRead	24	static
+../Peripherals/gpio/u_gpio.c:104:6:ResetOutput	8	static
+../Peripherals/gpio/u_gpio.c:120:6:ControlBuzzer	16	static
+../Peripherals/gpio/u_gpio.c:129:6:ControlCharger	16	static
+../Peripherals/gpio/u_gpio.c:138:6:ControlFan	16	static
+../Peripherals/gpio/u_gpio.c:147:6:ControlPump	16	static
+../Peripherals/gpio/u_gpio.c:156:6:ControlResetDriver	16	static
+../Peripherals/gpio/u_gpio.c:165:6:ControlValveL1	16	static
+../Peripherals/gpio/u_gpio.c:174:6:ControlValveL2	16	static
+../Peripherals/gpio/u_gpio.c:183:6:ControlValveL3	16	static
