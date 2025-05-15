@@ -18,6 +18,6 @@
 ../Application/Main_Program/Auto/auto.c:578:6:reset_db_test	8	static
 ../Application/Main_Program/Auto/auto.c:581:6:reset_motorhandle	8	static
 ../Application/Main_Program/Auto/auto.c:589:6:Autotask	32	static
-../Application/Main_Program/Auto/auto.c:647:6:autoTaskInit	8	static
-../Application/Main_Program/Auto/auto.c:656:6:autoTaskSupend	8	static
-../Application/Main_Program/Auto/auto.c:667:6:autoTaskResume	8	static
+../Application/Main_Program/Auto/auto.c:648:6:autoTaskInit	8	static
+../Application/Main_Program/Auto/auto.c:657:6:autoTaskSupend	8	static
+../Application/Main_Program/Auto/auto.c:668:6:autoTaskResume	8	static

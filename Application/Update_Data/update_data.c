@@ -130,10 +130,11 @@ static void inforUpdatetask(void *argument)
 		{
 			db_shuttle_run.shuttleCurrentStatus = 0 ;
 		}
-		char *buf = mg_mprintf("{ %m:%m, %m:%m, %m:%d, %m:%d, %m:%.4f, %m:%.4f, %m:%.4f, %m:%.4f, %m:%d, %m:%d, %m:%d, %m:%m, %m:%.4f, %m:%d, %m:%m, %m:%d, %m:%d, %m:%.4f, %m:%.4f}",
+		char *buf = mg_mprintf("{ %m:%m, %m:%m, %m:%d, %m:%d, %m:%d, %m:%.4f, %m:%.4f, %m:%.4f, %m:%.4f, %m:%d, %m:%d, %m:%d, %m:%m, %m:%.4f, %m:%d, %m:%m, %m:%d, %m:%d, %m:%.4f, %m:%.4f}",
 					MG_ESC("no"), MG_ESC(db_shuttle_info.no),
 					MG_ESC("ip"), MG_ESC(db_shuttle_info.ip),
 					MG_ESC("shuttleMode"),db_shuttle_run.shuttleMode,
+					MG_ESC("currentStep"),db_shuttle_info.currentStep,
 					MG_ESC("chargeCycle"),db_shuttle_info.charge_cycle,
 					MG_ESC("voltage"),db_shuttle_info.Voltage,
 					MG_ESC("current"),db_shuttle_info.Current,

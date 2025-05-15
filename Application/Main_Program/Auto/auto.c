@@ -52,10 +52,10 @@ struct CmdStatus
 	bool complete ;  // cờ báo hoàn thành nhiệm vụ
 	bool mission;    // Cờ báo có nhiệm vụ
 	uint8_t totalStep;  // Tổng số lệnh
-	uint8_t curentStep; // Lệnh hiện tại
+	uint8_t currentStep; // Lệnh hiện tại
 	uint16_t speedReg;  // thanh ghi CMD Speed
 };
-static struct CmdStatus cmdstatus = {.curentStep = 0, .complete = false} ;
+static struct CmdStatus cmdstatus = {.currentStep = 0, .complete = false} ;
 
 /*************************************************/
 
@@ -322,7 +322,7 @@ static bool aSlowHalfRoad()
 	static int pulse = 0 ;
 	static int delta_p = 0 ;
 	bool over_qr = false ;
-	if(checkQrcode(server_cmd.cmd_step[cmdstatus.curentStep + 1].Qrcode, sensor_signal.qr_sensor->Tag))  // nếu Qr bằng mã qr kế tiếp
+	if(checkQrcode(server_cmd.cmd_step[cmdstatus.currentStep + 1].Qrcode, sensor_signal.qr_sensor->Tag))  // nếu Qr bằng mã qr kế tiếp
 	{
 		over_qr = true ;
 	}
@@ -550,12 +550,12 @@ bool autoModeNomal()
 		MG_DEBUG(("NHẬN NHIỆM VỤ MỚI \n"));
 	}
 	if (!cmdstatus.mission || cmdstatus.complete) {  return true ; }
-	bool stepDone = runStep(server_cmd.cmd_step[cmdstatus.curentStep].Qrcode,
-								server_cmd.cmd_step[cmdstatus.curentStep].direction,
-								server_cmd.cmd_step[cmdstatus.curentStep].proceed);
+	bool stepDone = runStep(server_cmd.cmd_step[cmdstatus.currentStep].Qrcode,
+								server_cmd.cmd_step[cmdstatus.currentStep].direction,
+								server_cmd.cmd_step[cmdstatus.currentStep].proceed);
 	if(stepDone){
-		cmdstatus.curentStep++;
-		if (cmdstatus.curentStep >= cmdstatus.totalStep){
+		cmdstatus.currentStep++;
+		if (cmdstatus.currentStep >= cmdstatus.totalStep){
 			clearMission(); 	// xóa nhiệm vụ
 			missionComplete(1);  // gửi thông báo tới server
 		    db_shuttle_run.missionComplete ++ ;  // tăng số lệnh hoàn thành
@@ -635,6 +635,7 @@ void Autotask(void *argument)
 		}
 		aSelectSpeed();  // Set tốc độ động cơ
 		motorHandle.Error = shuttleErrorState();
+		db_shuttle_info.currentStep = cmdstatus.currentStep ;
 		uint64_t now = mg_millis();
 		if(u_timer_expired(&timer_auto, 40, now))
 		{
