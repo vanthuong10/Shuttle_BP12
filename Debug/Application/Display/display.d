@@ -51,7 +51,7 @@ Application/Display/display.o: ../Application/Display/display.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  .././External_Libs/user_custom.h ../Application/Database/database.h \
  .././Application/Signal/sensorSignal.h .././Peripherals/gpio/u_gpio.h \
- .././Peripherals/adc/MCP3208.h .././Peripherals/dac/MCP4922.h \
+ .././Peripherals/adc/MCP3208.h \
  .././Communication/Ethernet/userApplication/mongoose_glue.h \
  .././Communication/Ethernet/moongose/mongoose.h \
  .././Communication/Ethernet/userApplication/mongoose_config.h \
@@ -115,7 +115,6 @@ Application/Display/display.o: ../Application/Display/display.c \
 .././Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:
 .././Peripherals/adc/MCP3208.h:
-.././Peripherals/dac/MCP4922.h:
 .././Communication/Ethernet/userApplication/mongoose_glue.h:
 .././Communication/Ethernet/moongose/mongoose.h:
 .././Communication/Ethernet/userApplication/mongoose_config.h:

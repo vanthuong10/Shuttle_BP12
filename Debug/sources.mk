@@ -36,7 +36,6 @@ Communication/Ethernet/userApplication \
 Core/Src \
 Core/Startup \
 Drivers/STM32H7xx_HAL_Driver/Src \
-External_Libs/Fonts \
 External_Libs \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 Middlewares/Third_Party/FreeRTOS/Source \
@@ -47,8 +46,6 @@ Peripherals/Hydraulic \
 Peripherals/Motor \
 Peripherals/QR_Reader \
 Peripherals/adc \
-Peripherals/dac \
 Peripherals/gpio \
 Peripherals/led \
-Peripherals/oled \
 

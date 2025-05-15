@@ -58,7 +58,6 @@
 									<listOptionValue builtIn="false" value=".././Communication/Ethernet/userApplication"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/adc"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/Bms"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/dac"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/gpio"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/Motor"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/QR_Reader"/>
@@ -71,8 +70,6 @@
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Auto"/>
 									<listOptionValue builtIn="false" value=".././Application/Update_Data"/>
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Safety"/>
-									<listOptionValue builtIn="false" value="../Peripherals/oled"/>
-									<listOptionValue builtIn="false" value="../External_Libs/Fonts"/>
 									<listOptionValue builtIn="false" value="../Peripherals/led"/>
 									<listOptionValue builtIn="false" value="../Application/Display"/>
 								</option>
@@ -131,7 +128,6 @@
 									<listOptionValue builtIn="false" value=".././Communication/Ethernet/userApplication"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/adc"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/Bms"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/dac"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/gpio"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/Motor"/>
 									<listOptionValue builtIn="false" value=".././Peripherals/QR_Reader"/>
@@ -144,7 +140,6 @@
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Auto"/>
 									<listOptionValue builtIn="false" value=".././Application/Update_Data"/>
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Safety"/>
-									<listOptionValue builtIn="false" value="../Peripherals/oled"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.795688601" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -159,70 +154,6 @@
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.verilog.1588001824" name="MCU Output Converter Verilog" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.verilog.1131892221"/>
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.srec.714575904" name="MCU Output Converter Motorola S-rec" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.srec.1088607481"/>
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.1930668409" name="MCU Output Converter Motorola S-rec with symbols" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.1995164879"/>
-						</toolChain>
-					</folderInfo>
-					<folderInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.8342268.568823846" name="/" resourcePath="Peripherals/oled">
-						<toolChain id="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.exe.debug.2070633740" name="MCU ARM GCC" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.exe.debug" unusedChildren="">
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_mcu.1158172607.419991379.1258865842" name="MCU" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_mcu.1158172607.419991379"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_cpuid.1572592441.806124776.2021082858" name="CPU" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_cpuid.1572592441.806124776"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_coreid.843404032.1956850841.810189246" name="Core" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_coreid.843404032.1956850841"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.fpu.428642494.803092416.665760921" name="Floating-point unit" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.fpu.428642494.803092416"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.floatabi.1445567008.1527756041.1436141930" name="Floating-point ABI" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.floatabi.1445567008.1527756041"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_board.580032102.1420718247.1443946534" name="Board" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_board.580032102.1420718247"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.defaults.1859198002.595404302.2003969593" name="Defaults" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.defaults.1859198002.595404302"/>
-							<option id="com.st.stm32cube.ide.mcu.debug.option.cpuclock.1692865386.2041476388.1025512535" name="Cpu clock frequence" superClass="com.st.stm32cube.ide.mcu.debug.option.cpuclock.1692865386.2041476388"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoscanffloat.1548655277.817085419.1182551006" name="Use float with scanf from newlib-nano (-u _scanf_float)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoscanffloat.1548655277.817085419"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex.1194803353.793577676.930214333" name="Convert to Intel Hex file (-O ihex)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex.1194803353.793577676"/>
-							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.convertbinary.2061805590.351740198.1043315878" name="Convert to binary file (-O binary)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.convertbinary.2061805590.351740198"/>
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform" isAbstract="false" osList="all" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.1297433597" name="MCU/MPU GCC Assembler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.2032648505">
-								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.914482569" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
-							</tool>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.779825486" name="MCU/MPU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.803858083">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.29818133" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Core/Inc"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32H7xx_HAL_Driver/Inc"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy"/>
-									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/include"/>
-									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"/>
-									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32H7xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
-									<listOptionValue builtIn="false" value=".././Communication/Ethernet/moongose"/>
-									<listOptionValue builtIn="false" value=".././Communication/Ethernet/userApplication"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/adc"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/Bms"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/dac"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/gpio"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/Motor"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/QR_Reader"/>
-									<listOptionValue builtIn="false" value=".././Communication/CAN"/>
-									<listOptionValue builtIn="false" value="../Application/Database"/>
-									<listOptionValue builtIn="false" value=".././Application/Signal"/>
-									<listOptionValue builtIn="false" value=".././External_Libs"/>
-									<listOptionValue builtIn="false" value=".././Peripherals/Hydraulic"/>
-									<listOptionValue builtIn="false" value="../Application/Main_Program/Manual"/>
-									<listOptionValue builtIn="false" value=".././Application/Main_Program/Auto"/>
-									<listOptionValue builtIn="false" value=".././Application/Update_Data"/>
-									<listOptionValue builtIn="false" value=".././Application/Main_Program/Safety"/>
-									<listOptionValue builtIn="false" value="../Peripherals/oled"/>
-									<listOptionValue builtIn="false" value="../External_Libs/Fonts"/>
-									<listOptionValue builtIn="false" value="../Peripherals/led"/>
-									<listOptionValue builtIn="false" value="../Application/Display"/>
-								</option>
-								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1803385525" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
-							</tool>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.1039745721" name="MCU/MPU G++ Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.22781431"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.209679263" name="MCU/MPU GCC Linker" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.1249156084"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.linker.1773920558" name="MCU/MPU G++ Linker" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.linker.1118829840"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.archiver.598475959" name="MCU/MPU GCC Archiver" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.archiver.597734780"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.size.1840448708" name="MCU Size" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.size.259980687"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objdump.listfile.143883977" name="MCU Output Converter list file" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objdump.listfile.1844249027"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.hex.80664108" name="MCU Output Converter Hex" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.hex.1257116350"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.binary.54138727" name="MCU Output Converter Binary" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.binary.452127325"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.verilog.1561286357" name="MCU Output Converter Verilog" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.verilog.1588001824"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.srec.363142986" name="MCU Output Converter Motorola S-rec" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.srec.714575904"/>
-							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.738314182" name="MCU Output Converter Motorola S-rec with symbols" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.1930668409"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>

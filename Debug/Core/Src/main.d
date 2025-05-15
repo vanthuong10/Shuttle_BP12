@@ -53,9 +53,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  .././Communication/Ethernet/userApplication/mongoose_config.h \
  ../Application/Database/database.h \
  .././Application/Signal/sensorSignal.h .././Peripherals/gpio/u_gpio.h \
- .././Peripherals/adc/MCP3208.h .././Peripherals/dac/MCP4922.h \
- .././External_Libs/user_custom.h .././Peripherals/QR_Reader/QrReader.h \
- .././Communication/CAN/CanBus.h .././Peripherals/Bms/dalySmartBms.h \
+ .././Peripherals/adc/MCP3208.h .././External_Libs/user_custom.h \
+ .././Peripherals/QR_Reader/QrReader.h .././Communication/CAN/CanBus.h \
+ .././Peripherals/Bms/dalySmartBms.h \
  .././Peripherals/Motor/MotorControl.h \
  ../Application/Main_Program/Manual/manual.h \
  .././Application/Main_Program/Auto/auto.h \
@@ -120,7 +120,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 .././Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:
 .././Peripherals/adc/MCP3208.h:
-.././Peripherals/dac/MCP4922.h:
 .././External_Libs/user_custom.h:
 .././Peripherals/QR_Reader/QrReader.h:
 .././Communication/CAN/CanBus.h:

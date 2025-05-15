@@ -8,15 +8,12 @@
 #include "cmsis_os.h"
 #include "hydraulic.h"
 #include "CanBus.h"
-#include "Oled_PalletShuttle.h"
-
 SensorSignal sensor_signal ;
 osThreadId_t IOTaskHandle;
 ChangeMode change_mode = NULL ;
 extern SPI_HandleTypeDef hspi2;
 extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
-extern SPI_HandleTypeDef hspi4;
 extern FDCAN_HandleTypeDef hfdcan1;
 static uint64_t input_timer[4];
 
@@ -246,7 +243,6 @@ void canOpenInit()
 void IOControl(void *argument)
 {
 	mcp3208.begin(&hspi2,GPIOI,GPIO_PIN_0);
-	mcp4922.begin(&hspi4,GPIOE,GPIO_PIN_4);
 	canOpenInit();
 	qrInit();
 	MotorInit(&canOpen);

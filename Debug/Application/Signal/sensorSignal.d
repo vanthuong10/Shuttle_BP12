@@ -38,7 +38,7 @@ Application/Signal/sensorSignal.o: ../Application/Signal/sensorSignal.c \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- .././Peripherals/adc/MCP3208.h .././Peripherals/dac/MCP4922.h \
+ .././Peripherals/adc/MCP3208.h \
  .././Communication/Ethernet/userApplication/mongoose_glue.h \
  .././Communication/Ethernet/moongose/mongoose.h \
  .././Communication/Ethernet/userApplication/mongoose_config.h \
@@ -56,10 +56,7 @@ Application/Signal/sensorSignal.o: ../Application/Signal/sensorSignal.c \
  .././Peripherals/Motor/MotorControl.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- .././Peripherals/Hydraulic/hydraulic.h \
- ../Peripherals/oled/Oled_PalletShuttle.h \
- ../Peripherals/oled/Oled_Config.h ../Peripherals/oled/GUI_Paint.h \
- ../External_Libs/Fonts/../Fonts/fonts.h ../Peripherals/oled/ImageData.h
+ .././Peripherals/Hydraulic/hydraulic.h
 ../Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:
 ../Core/Inc/main.h:
@@ -102,7 +99,6 @@ Application/Signal/sensorSignal.o: ../Application/Signal/sensorSignal.c \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
 .././Peripherals/adc/MCP3208.h:
-.././Peripherals/dac/MCP4922.h:
 .././Communication/Ethernet/userApplication/mongoose_glue.h:
 .././Communication/Ethernet/moongose/mongoose.h:
 .././Communication/Ethernet/userApplication/mongoose_config.h:
@@ -123,8 +119,3 @@ Application/Signal/sensorSignal.o: ../Application/Signal/sensorSignal.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 .././Peripherals/Hydraulic/hydraulic.h:
-../Peripherals/oled/Oled_PalletShuttle.h:
-../Peripherals/oled/Oled_Config.h:
-../Peripherals/oled/GUI_Paint.h:
-../External_Libs/Fonts/../Fonts/fonts.h:
-../Peripherals/oled/ImageData.h:

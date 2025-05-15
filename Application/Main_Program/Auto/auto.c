@@ -166,17 +166,14 @@ static bool changeDirection(ShuttleAxis axis)
     		flag_change_dir.flag4 = false ;
     	}else
     	{
-//    		if(cmdstatus.curentStep == 0) /// nếu lệnh đầu lúc này chưa có hướng di chuyển
-//    		{
-    			if(!flag_change_dir.flag4) // nếu chưa thay đổi gia tốc
-    			{
-    				flag_change_dir.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-    			}else
-    			{
-        			if(sensor_signal.qr_sensor->distanceX >3) {motorHandle.drirection = 3;} // chạy lùi
-        			else if (sensor_signal.qr_sensor->distanceX <-3) {motorHandle.drirection = 1;} // chạy tiến
-    			}
-//    		}
+			if(!flag_change_dir.flag4) // nếu chưa thay đổi gia tốc
+			{
+				flag_change_dir.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+			}else
+			{
+				if(sensor_signal.qr_sensor->distanceX >3) {motorHandle.drirection = 3;} // chạy lùi
+				else if (sensor_signal.qr_sensor->distanceX <-3) {motorHandle.drirection = 1;} // chạy tiến
+			}
     	}
 	    if (flag_change_dir.flag1)
 	    {
@@ -200,17 +197,14 @@ static bool changeDirection(ShuttleAxis axis)
     		flag_change_dir.flag3 = false ;
     	}else
     	{
-//    		if(cmdstatus.curentStep == 0) /// nếu lệnh đầu lúc này chưa có hướng di chuyển
-//    		{
-    			if(!flag_change_dir.flag3) // nếu chưa thay đổi gia tốc
-				{
-					flag_change_dir.flag3 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-				}else
-				{
-	    			if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
-	    			else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
-				}
-//    		}
+			if(!flag_change_dir.flag3) // nếu chưa thay đổi gia tốc
+			{
+				flag_change_dir.flag3 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+			}else
+			{
+				if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
+				else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
+			}
     	}
 	    if (flag_change_dir.flag2)
 	    {
@@ -250,17 +244,13 @@ static bool aGetPack()
 		flag_get_pack.flag2 = false;
 	}else
 	{
-//		if(cmdstatus.curentStep == 0) /// nếu lệnh đầu lúc này chưa có hướng di chuyển
-//		{
-			if(!flag_get_pack.flag2) // nếu chưa thay đổi gia tốc
-			{
-				flag_get_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-			}else{
-				if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
-				else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
-			}
-
-//		}
+		if(!flag_get_pack.flag2) // nếu chưa thay đổi gia tốc
+		{
+			flag_get_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+		}else{
+			if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
+			else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
+		}
 	}
 	if (flag_get_pack.flag1) {
 		motorHandle.en = false;  // dừng motor
@@ -297,16 +287,13 @@ static bool aPutPack()
 		flag_put_pack.flag2 = false ;
 	}else
 	{
-//		if(cmdstatus.curentStep == 0) /// nếu lệnh đầu lúc này chưa có hướng di chuyển
-//		{
-			if (!flag_put_pack.flag2) // nếu chưa thay đổi gia tốc
-			{
-				flag_put_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-			} else {
-				if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
-				else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
-			}
-//		}
+		if (!flag_put_pack.flag2) // nếu chưa thay đổi gia tốc
+		{
+			flag_put_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+		} else {
+			if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
+			else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
+		}
 	}
 	if (flag_put_pack.flag1) {
 		motorHandle.en = false;  // dừng motor
@@ -355,7 +342,6 @@ static bool aSlowHalfRoad()
  * @brief   Thực hiện đi chậm.
  * 		- Shuttle sẽ đi chậm đến khi nhận được mã mới
  */
-//static FlagState flag_slow_speed = {0,0,0,0} ;
 static bool aSlowSpeed()
 {
 	aSetSpeed(SPEED_LOW);  // đi chậm
@@ -443,7 +429,6 @@ static bool aTakeAction(int action)
 	 * flag1: reset_timer
 	 * flag2: en_action
 	 * */
-	//uint64_t now = mg_millis();
 	bool state = false;
 	switch (action) {
 		case 10:

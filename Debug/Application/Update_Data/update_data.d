@@ -40,7 +40,7 @@ Application/Update_Data/update_data.o: \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- .././Peripherals/adc/MCP3208.h .././Peripherals/dac/MCP4922.h \
+ .././Peripherals/adc/MCP3208.h \
  .././Communication/Ethernet/userApplication/mongoose_glue.h \
  .././Communication/Ethernet/moongose/mongoose.h \
  .././Communication/Ethernet/userApplication/mongoose_config.h \
@@ -59,10 +59,7 @@ Application/Update_Data/update_data.o: \
  ../Application/Update_Data/update_data.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- .././Application/Main_Program/Safety/safety.h \
- ../Peripherals/oled/Oled_PalletShuttle.h \
- ../Peripherals/oled/Oled_Config.h ../Peripherals/oled/GUI_Paint.h \
- ../External_Libs/Fonts/../Fonts/fonts.h ../Peripherals/oled/ImageData.h
+ .././Application/Main_Program/Safety/safety.h
 ../Application/Database/database.h:
 .././Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:
@@ -106,7 +103,6 @@ Application/Update_Data/update_data.o: \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
 .././Peripherals/adc/MCP3208.h:
-.././Peripherals/dac/MCP4922.h:
 .././Communication/Ethernet/userApplication/mongoose_glue.h:
 .././Communication/Ethernet/moongose/mongoose.h:
 .././Communication/Ethernet/userApplication/mongoose_config.h:
@@ -128,8 +124,3 @@ Application/Update_Data/update_data.o: \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 .././Application/Main_Program/Safety/safety.h:
-../Peripherals/oled/Oled_PalletShuttle.h:
-../Peripherals/oled/Oled_Config.h:
-../Peripherals/oled/GUI_Paint.h:
-../External_Libs/Fonts/../Fonts/fonts.h:
-../Peripherals/oled/ImageData.h:

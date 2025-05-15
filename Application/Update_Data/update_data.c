@@ -8,7 +8,6 @@
 #include "update_data.h"
 #include "cmsis_os.h"
 #include "safety.h"
-#include "Oled_PalletShuttle.h"
 
 osThreadId_t SyncTaskHandle;
 osMutexId_t jsonCreateMutex;

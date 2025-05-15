@@ -9,10 +9,8 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include Peripherals/oled/subdir.mk
 -include Peripherals/led/subdir.mk
 -include Peripherals/gpio/subdir.mk
--include Peripherals/dac/subdir.mk
 -include Peripherals/adc/subdir.mk
 -include Peripherals/QR_Reader/subdir.mk
 -include Peripherals/Motor/subdir.mk
@@ -22,7 +20,6 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
--include External_Libs/Fonts/subdir.mk
 -include External_Libs/subdir.mk
 -include Drivers/STM32H7xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk

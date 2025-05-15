@@ -12,7 +12,6 @@ extern "C" {
 #endif
 #include "u_gpio.h"
 #include "MCP3208.h"
-#include "MCP4922.h"
 #include "mongoose_glue.h"
 #include "user_custom.h"
 #include "QrReader.h"

@@ -6,7 +6,6 @@
  */
 #include "hydraulic.h"
 #include "u_gpio.h"
-#include "MCP4922.h"
 #include "user_custom.h"
 #include "cmsis_os.h"
 #include "stdio.h"
@@ -122,8 +121,6 @@ void hydraulicSetState(struct HydraulicTableControl state) {
     if(state.pump == 1)
     {
         HAL_GPIO_WritePin(outputGpio.valveL1.Port, outputGpio.valveL1.gpioPin, (GPIO_PinState) state.valve1);
-        HAL_GPIO_WritePin(outputGpio.pump.Port, outputGpio.pump.gpioPin, (GPIO_PinState) state.pump);
-    	mcp4922.setDAC(600,600);
 		if (!triger_flag[1]) {
 			pumpSet(PUMP_ENABLE_REG, 1);
 			triger_flag[1] = true ;
@@ -240,9 +237,7 @@ static void hydraulicOffTask(void *argument) {
     for (;;) {
         if (osSemaphoreAcquire(pumpSemaphoreHandle, osWaitForever) == osOK) {
             osDelay(TIMER_DELAY_OFF_PUMP); // Đợi 100ms
-            HAL_GPIO_WritePin(outputGpio.pump.Port, outputGpio.pump.gpioPin, GPIO_PIN_RESET);  // tắt bơm
             HAL_GPIO_WritePin(outputGpio.valveL1.Port, outputGpio.valveL1.gpioPin, GPIO_PIN_RESET); // tắt van L1
-            mcp4922.setDAC(0,0);
             if(triger_flag[1])
             {
                 pumpSet(PUMP_ENABLE_REG, 0);
