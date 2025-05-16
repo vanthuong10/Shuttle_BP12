@@ -9,6 +9,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include Peripherals/oled_led/subdir.mk
 -include Peripherals/led/subdir.mk
 -include Peripherals/gpio/subdir.mk
 -include Peripherals/adc/subdir.mk

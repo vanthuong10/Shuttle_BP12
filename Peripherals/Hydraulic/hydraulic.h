@@ -15,7 +15,7 @@ extern "C" {
 #include "main.h"
 
 #define PUMP_RX_BUFFER_SIZE 16
-#define PUMP_ID 1
+#define PUMP_ID 99
 #define PUMP_START_ADD 0x41
 #define PUMP_NUMBER_OF_REGISTER 5
 

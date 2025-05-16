@@ -1,2 +1,2 @@
-../Application/Display/display.c:23:13:displaytask	24	static
-../Application/Display/display.c:63:6:displayInit	8	static
+../Application/Display/display.c:23:13:displaytask	32	static
+../Application/Display/display.c:91:6:displayInit	8	static

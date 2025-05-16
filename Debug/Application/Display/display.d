@@ -49,7 +49,8 @@ Application/Display/display.o: ../Application/Display/display.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- .././External_Libs/user_custom.h ../Application/Database/database.h \
+ .././External_Libs/user_custom.h ../Peripherals/oled_led/mb_display.h \
+ ../Application/Database/database.h \
  .././Application/Signal/sensorSignal.h .././Peripherals/gpio/u_gpio.h \
  .././Peripherals/adc/MCP3208.h \
  .././Communication/Ethernet/userApplication/mongoose_glue.h \
@@ -111,6 +112,7 @@ Application/Display/display.o: ../Application/Display/display.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 .././External_Libs/user_custom.h:
+../Peripherals/oled_led/mb_display.h:
 ../Application/Database/database.h:
 .././Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:

@@ -8,6 +8,7 @@
 #include "cmsis_os.h"
 #include "hydraulic.h"
 #include "CanBus.h"
+#include "mb_display.h"
 SensorSignal sensor_signal ;
 osThreadId_t IOTaskHandle;
 ChangeMode change_mode = NULL ;
@@ -249,6 +250,7 @@ void IOControl(void *argument)
 	sensor_signal.qr_sensor = &qr ;
 	bmsInit(&huart7);
 	pumpInit(&huart6);
+	mb_ledInit(&huart6);
 	configCylinderLimitSensor(&sensor_signal.di_sensor.UP_LIMIT_PK1, &sensor_signal.di_sensor.UP_LIMIT_PK2, &sensor_signal.di_sensor.DOWN_LIMIT_PK1, &sensor_signal.di_sensor.DOWN_LIMIT_PK2,
 							  &sensor_signal.di_sensor.UP_LIMIT_WH1, &sensor_signal.di_sensor.UP_LIMIT_WH2, &sensor_signal.di_sensor.DOWN_LIMIT_WH1, &sensor_signal.di_sensor.DOWN_LIMIT_WH2);
 	if(!motorStarting()) { sensor_signal.motor_error_state = 1 ; }

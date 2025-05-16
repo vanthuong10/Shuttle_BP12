@@ -72,6 +72,7 @@
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Safety"/>
 									<listOptionValue builtIn="false" value="../Peripherals/led"/>
 									<listOptionValue builtIn="false" value="../Application/Display"/>
+									<listOptionValue builtIn="false" value="../Peripherals/oled_led"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1829180898" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>

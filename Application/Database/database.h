@@ -113,6 +113,7 @@ struct DataInfo {
 	char *no;
 	uint8_t chargeDischargeStatus;
 	uint8_t currentStep;
+	uint32_t ip32U;
 };
 
 extern struct DataInfo db_shuttle_info;

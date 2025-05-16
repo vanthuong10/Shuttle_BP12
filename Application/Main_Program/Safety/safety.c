@@ -12,6 +12,8 @@
 #include "hydraulic.h"
 #include "display.h"
 
+static char NO_ERROR_STATUS[10] =  "00";
+
 osThreadId_t SaftyTaskHandle;
 const osThreadAttr_t SafetyTask_attributes = {
   .name = "SafetyTask",

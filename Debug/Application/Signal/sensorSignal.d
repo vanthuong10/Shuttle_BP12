@@ -56,7 +56,9 @@ Application/Signal/sensorSignal.o: ../Application/Signal/sensorSignal.c \
  .././Peripherals/Motor/MotorControl.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- .././Peripherals/Hydraulic/hydraulic.h
+ .././Peripherals/Hydraulic/hydraulic.h \
+ ../Peripherals/oled_led/mb_display.h ../Application/Database/database.h \
+ .././Application/Signal/sensorSignal.h
 ../Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:
 ../Core/Inc/main.h:
@@ -119,3 +121,6 @@ Application/Signal/sensorSignal.o: ../Application/Signal/sensorSignal.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 .././Peripherals/Hydraulic/hydraulic.h:
+../Peripherals/oled_led/mb_display.h:
+../Application/Database/database.h:
+.././Application/Signal/sensorSignal.h:

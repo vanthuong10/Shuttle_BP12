@@ -9,7 +9,7 @@
 #include "cmsis_os.h"
 #include "stdio.h"
 #include "user_custom.h"
-#include "database.h"
+#include "mb_display.h"
 
 extern TIM_HandleTypeDef htim1;
 osThreadId_t displayTaskHandle;
@@ -55,8 +55,36 @@ static void displaytask(void *argument)
 				led_status = LED_STATE_STOP ;
 				break;
 		}
+
 		Led_status(led_status);
-		osDelay(100/portTICK_PERIOD_MS);
+
+		switch (shuttle_state) {
+			case LED_STATE_RUN:
+				mb_setLed(0, 0, 254, 500, 250);  //Green
+				break;
+			case LED_STATE_STOP:
+				mb_setLed(242, 5, 135, 500, 250);
+				break;
+			case LED_STATE_LIFT:
+				mb_setLed(0, 200, 200, 50, 250);  //Blue
+				break;
+			case LED_STATE_BLOCK:
+				mb_setLed(245, 2, 51, 100, 255);
+				break;
+			case LED_STATE_EMG:
+				mb_setLed(254, 0, 0, 50, 250);
+				break;
+			case LED_STATE_ERORR_WIFI:
+				mb_setLed(255, 0, 0, 100, 250);
+				break;
+			case LED_STATE_SLOW:
+				mb_setLed(255, 3, 247, 100, 250);
+				break;
+			default:
+				break ;
+			}
+		mb_setOled(&db_shuttle_info, &db_shuttle_run);
+		osDelay(200/portTICK_PERIOD_MS);
 	}
 }
 

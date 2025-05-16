@@ -14,7 +14,6 @@ extern "C" {
 #include "stdbool.h"
 #include "database.h"
 
-#define NO_ERROR_STATUS  "00"
 #define TAG_EMG "X9999Y9999"
 #define PRESSURE_MAX 80 // bar
 #define DISTANCE_QR_X 1.35 //m

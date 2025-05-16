@@ -48,4 +48,5 @@ Peripherals/QR_Reader \
 Peripherals/adc \
 Peripherals/gpio \
 Peripherals/led \
+Peripherals/oled_led \
 

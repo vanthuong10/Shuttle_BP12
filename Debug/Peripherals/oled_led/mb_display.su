@@ -1,0 +1,4 @@
+../Peripherals/oled_led/mb_display.c:17:6:mb_setLed	32	static
+../Peripherals/oled_led/mb_display.c:44:6:mb_setOled	32	static
+../Peripherals/oled_led/mb_display.c:100:6:mb_setPage	24	static
+../Peripherals/oled_led/mb_display.c:115:6:mb_ledInit	16	static
