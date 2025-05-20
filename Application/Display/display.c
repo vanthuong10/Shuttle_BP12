@@ -83,8 +83,11 @@ static void displaytask(void *argument)
 			default:
 				break ;
 			}
+		osDelay(100/portTICK_PERIOD_MS);
+		mb_setPage(1);
+		osDelay(100/portTICK_PERIOD_MS);
 		mb_setOled(&db_shuttle_info, &db_shuttle_run);
-		osDelay(200/portTICK_PERIOD_MS);
+		osDelay(100/portTICK_PERIOD_MS);
 	}
 }
 

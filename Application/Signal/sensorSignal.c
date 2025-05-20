@@ -15,6 +15,7 @@ ChangeMode change_mode = NULL ;
 extern SPI_HandleTypeDef hspi2;
 extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
+extern UART_HandleTypeDef huart4;
 extern FDCAN_HandleTypeDef hfdcan1;
 static uint64_t input_timer[4];
 
@@ -249,7 +250,7 @@ void IOControl(void *argument)
 	MotorInit(&canOpen);
 	sensor_signal.qr_sensor = &qr ;
 	bmsInit(&huart7);
-	pumpInit(&huart6);
+	pumpInit(&huart4);
 	mb_ledInit(&huart6);
 	configCylinderLimitSensor(&sensor_signal.di_sensor.UP_LIMIT_PK1, &sensor_signal.di_sensor.UP_LIMIT_PK2, &sensor_signal.di_sensor.DOWN_LIMIT_PK1, &sensor_signal.di_sensor.DOWN_LIMIT_PK2,
 							  &sensor_signal.di_sensor.UP_LIMIT_WH1, &sensor_signal.di_sensor.UP_LIMIT_WH2, &sensor_signal.di_sensor.DOWN_LIMIT_WH1, &sensor_signal.di_sensor.DOWN_LIMIT_WH2);
