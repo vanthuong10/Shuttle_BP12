@@ -153,6 +153,7 @@ static void processingDataTopicHandle() {
 //		printf(buf);
 //		free(buf);
 		free(jpath);
+		free(str);
 	}
 }
 

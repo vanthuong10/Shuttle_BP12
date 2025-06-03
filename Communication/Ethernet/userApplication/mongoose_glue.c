@@ -8,7 +8,7 @@
 #include "mongoose_glue.h"
 #include "cmsis_os.h"
 
-struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,12) ,//MG_U32(10,14,16,34) ,
+struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,15) ,//MG_U32(10,14,16,34) ,
 									 .mask = MG_U32(255,255,254,0),
 									 .gw   = MG_U32(10,14,64,1),
 									 .mqttBroker = "mqtt://10.14.64.11:1991",
@@ -20,7 +20,7 @@ struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,12) ,//MG_U32(10,14
 									 .s_pub_info = "shuttle/information",
 									 .s_pub_report = "shuttle/report" ,
 									 .s_pub_complete = "shuttle/completeMission" ,
-									 .no = "002"  };
+									 .no = "001"  };
 uint8_t *tcpConnectState;
 osMutexId_t mqttMutex;
 
@@ -81,29 +81,35 @@ void glue_mqtt_tls_init(struct mg_connection *c) {
 
 // Called when we connected to the MQTT server
 void glue_mqtt_on_connect(struct mg_connection *c, int code) {
-  char* path = mg_mprintf("%s/%s", tcpConfig.s_sub_handle, tcpConfig.no);
+  char path[128];
   struct mg_mqtt_opts opts;
+
+  // Topic 1
+  mg_snprintf(path, sizeof(path), "%s/%s", tcpConfig.s_sub_handle, tcpConfig.no);
   memset(&opts, 0, sizeof(opts));
   opts.qos = 1;
   opts.topic = mg_str(path);
   mg_mqtt_sub(c, &opts);
   MG_DEBUG(("%lu code %d. Subscribing to [%.*s]", c->id, code, opts.topic.len,
             opts.topic.buf));
-  path = mg_mprintf("%s/%s", tcpConfig.s_sub_run, tcpConfig.no);
+
+  // Topic 2
+  mg_snprintf(path, sizeof(path), "%s/%s", tcpConfig.s_sub_run, tcpConfig.no);
   memset(&opts, 0, sizeof(opts));
   opts.qos = 1;
   opts.topic = mg_str(path);
   mg_mqtt_sub(c, &opts);
   MG_DEBUG(("%lu code %d. Subscribing to [%.*s]", c->id, code, opts.topic.len,
             opts.topic.buf));
-  path = mg_mprintf("%s/%s", tcpConfig.s_sub_admin, tcpConfig.no);
+
+  // Topic 3
+  mg_snprintf(path, sizeof(path), "%s/%s", tcpConfig.s_sub_admin, tcpConfig.no);
   memset(&opts, 0, sizeof(opts));
   opts.qos = 1;
   opts.topic = mg_str(path);
   mg_mqtt_sub(c, &opts);
   MG_DEBUG(("%lu code %d. Subscribing to [%.*s]", c->id, code, opts.topic.len,
             opts.topic.buf));
-  free(path);
 }
 
 // This function gets called for every received MQTT message

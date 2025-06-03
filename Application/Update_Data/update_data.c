@@ -22,7 +22,7 @@ static void getInfoBatery()
 	db_shuttle_info.batteryPercentage = sensor_signal.battery.SOC;
 	db_shuttle_info.charge_cycle      = sensor_signal.battery.cycle_time;
 	db_shuttle_info.Remaining_capacity = sensor_signal.battery.remaining_capacity;
-	db_shuttle_info.chargeDischargeStatus = sensor_signal.battery.charge_status;
+	db_shuttle_info.chargeDischargeStatus = sensor_signal.battery.charge_status == 1 ? true : false;
 	db_shuttle_info.Voltage				  = sensor_signal.battery.volt;
 	db_shuttle_info.Current				  = sensor_signal.battery.curent;
 	db_shuttle_info.bmsTemperature        = sensor_signal.battery.temprature;
@@ -118,6 +118,7 @@ static void inforUpdatetask(void *argument)
 	for(;;)
 	{
 		mg_snprintf(db_shuttle_info.ip, sizeof(db_shuttle_info.ip), "%M", mg_print_ip4, &mif->ip);
+		db_shuttle_info.ip32U = mif->ip ;
 		if(!checkQrcode(sensor_signal.qr_sensor->Tag, TAG_EMG)) // đọc mã cấm không gửi lên server
 		{
 			strcpy(tmp_buf,sensor_signal.qr_sensor->Tag);

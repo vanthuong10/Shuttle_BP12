@@ -10,7 +10,7 @@
 
 
 static struct DisplayHandle {
-	uint8_t tx_data[32];
+	uint8_t tx_data[128];
 	UART_HandleTypeDef *oled_Serial;
 }displayHandle;
 
@@ -51,10 +51,10 @@ void mb_setOled(struct DataInfo *info, struct DataRun *data_run)
 	displayHandle.tx_data[5] = OLED_NUM_OF_REG & 0xFF;         // LSB of number of registers
 	displayHandle.tx_data[6] = 32 ;                 		  //Byte count (16 Registers would need 32 bytes )
 	// Chuyển đổi giá trị
-	uint16_t batteryPercent = (uint16_t)(info->batteryPercentage * 100); // Ví dụ: 75.50% -> 7550
+	uint16_t batteryPercent = (uint16_t)(info->batteryPercentage); // Ví dụ: 75.50% -> 7550
 	uint16_t bmsTemp = (uint16_t)(info->bmsTemperature * 100);           // Ví dụ: 25.50°C -> 2550
-	uint16_t voltage = (uint16_t)(info->Voltage * 100);                 // Ví dụ: 12.34V -> 1234
-	uint16_t current = (uint16_t)(info->Current * 100);                 // Ví dụ: 1.23A -> 123
+	uint16_t voltage = (uint16_t)(info->Voltage *100 );                 // Ví dụ: 12.34V -> 1234
+	uint16_t current = (uint16_t)(info->Current * -100);                 // Ví dụ: 1.23A -> 123
 	uint8_t ip[4];
 	OLED_U32_DECODE(info->ip32U,ip[0],ip[1], ip[2], ip[3]);
 	// Data
@@ -74,10 +74,10 @@ void mb_setOled(struct DataInfo *info, struct DataRun *data_run)
 	displayHandle.tx_data[20] = (uint16_t)data_run->shuttleMode & 0xFF ;
 	displayHandle.tx_data[21] = ((uint16_t)TIME_NEXT_SCREEN >> 8) & 0xFF ;
 	displayHandle.tx_data[22] = (uint16_t)TIME_NEXT_SCREEN & 0xFF ;
-	displayHandle.tx_data[23] = ip[0] ;
-	displayHandle.tx_data[24] = ip[1] ;
-	displayHandle.tx_data[25] = ip[2] ;
-	displayHandle.tx_data[26] = ip[3] ;
+	displayHandle.tx_data[23] = ip[3] ;
+	displayHandle.tx_data[24] = ip[2] ;
+	displayHandle.tx_data[25] = ip[1] ;
+	displayHandle.tx_data[26] = ip[0] ;
 	displayHandle.tx_data[27] = db_shuttle_info.errorStatus[0] ;
 	displayHandle.tx_data[28] = db_shuttle_info.errorStatus[1] ;
 	displayHandle.tx_data[29] = db_shuttle_info.errorStatus[2] ;

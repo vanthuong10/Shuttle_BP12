@@ -792,7 +792,7 @@ struct timeval {
 #endif
 
 #ifndef MG_IO_SIZE
-#define MG_IO_SIZE 256  // Granularity of the send/recv IO buffer growth
+#define MG_IO_SIZE 512  // Granularity of the send/recv IO buffer growth
 #endif
 
 #ifndef MG_MAX_RECV_SIZE
@@ -800,7 +800,7 @@ struct timeval {
 #endif
 
 #ifndef MG_DATA_SIZE
-#define MG_DATA_SIZE 32  // struct mg_connection :: data size
+#define MG_DATA_SIZE 256  // struct mg_connection :: data size
 #endif
 
 #ifndef MG_MAX_HTTP_HEADERS

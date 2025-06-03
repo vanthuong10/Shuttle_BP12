@@ -17,7 +17,7 @@ extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
 extern UART_HandleTypeDef huart4;
 extern FDCAN_HandleTypeDef hfdcan1;
-static uint64_t input_timer[4];
+static uint64_t input_timer[4] = { 0, 0 , 0 ,0 };
 
 
 const osThreadAttr_t IOTask_attributes = {
@@ -268,7 +268,7 @@ void IOControl(void *argument)
 		if (u_timer_expired(&input_timer[0], 300, now)) {   // 300 ms đọc giá trị áp suất và pin 1 lần
 			getDataBms();
 			sensor_signal.pressure_sensor = getPressure(mcp3208.readChannel(0));
-		  }
+		}
 		if(sensor_signal.battery.temprature >= TEMPERATURE_RUN_FAN)  // bật quạt khi quá giới hạn nhiệt độ
 		{
 			ControlFan(GPIO_PIN_SET);

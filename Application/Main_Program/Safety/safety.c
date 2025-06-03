@@ -13,6 +13,7 @@
 #include "display.h"
 
 static char NO_ERROR_STATUS[10] =  "00";
+static bool emg_state = false ;
 
 osThreadId_t SaftyTaskHandle;
 const osThreadAttr_t SafetyTask_attributes = {
@@ -220,11 +221,12 @@ static struct ShuttleAlarmStatus checkPalletPositionAlarm()
 static struct ShuttleAlarmStatus checkEmgButton()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	if((bool)sensor_signal.di_sensor.EMG_BUTTON)
+	if((bool)sensor_signal.di_sensor.EMG_BUTTON || app_data.emg == 1)
 	{
 		alarm.alarmState = true;
 		alarm.alarmtype = 0;
 		alarm.alarmCode = 1;
+		emg_state = true ;
 		hydraulicEmg();
 	}
 	return alarm ;
@@ -341,7 +343,7 @@ static struct ShuttleErrorStatus checkOverDistanceQr(int *p) {
 		}
 	}else if(axis == AXIS_Y)
 	{
-		if(abs(delta_p) > distanceToPulses(DISTANCE_QR_Y + 0.1))
+		if(abs(delta_p) > distanceToPulses(DISTANCE_QR_Y + 0.15))
 		{
 			error.errorState = true ;
 			error.errortype  = 1 ;
@@ -404,8 +406,9 @@ static void safetyTask(void *argument)
 		if((bool)app_data.resetErrors || sensor_signal.di_sensor.RF_RESET)
 		{
 			printf("Reset shuttle\n");
-			if(sensor_signal.motor_error_state == 2)
+			if(shuttle_error_table[0].errorState || emg_state )
 			{
+				emg_state = false ;
 				motorErrorReset();
 			}
 			if(shuttle_error_table[4].errorState) pulse_safety = 0 ; // reset xung encoder

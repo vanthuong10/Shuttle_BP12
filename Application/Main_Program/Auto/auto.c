@@ -590,6 +590,7 @@ void Autotask(void *argument)
 {
 	db_test.stepCmd = 0 ;
 	reset_motorhandle();
+	shuttle_started();
 	for(;;)
 	{
 		switch (server_cmd.adminCmd) {

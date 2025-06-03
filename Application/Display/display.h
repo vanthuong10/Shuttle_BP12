@@ -14,6 +14,7 @@ extern "C" {
 
 void displayInit();
 void shuttleSetLed(LEDSTATUS lv);
+void shuttle_started();
 
 #ifdef __cplusplus
 }

@@ -33,10 +33,13 @@ void threadQr(void *argument) {
 	{
 		if (osSemaphoreAcquire(semaphore_qr, osWaitForever) == osOK) {
 			char* qrRead = pvPortMalloc(sizeof(char)*QR_SIZE);
-			get_substring_between_newlines((char*)QrBuffer, qrRead);
-			parse_string(qrRead, &qr);
-			//printf("Received QRcode: %s\n", (char*) qrRead);
-			vPortFree(qrRead);
+			if(qrRead != NULL)
+			{
+				get_substring_between_newlines((char*)QrBuffer, qrRead);
+				parse_string(qrRead, &qr);
+				//printf("Received QRcode: %s\n", (char*) qrRead);
+				vPortFree(qrRead);
+			}
 		}
 	}
 }
@@ -75,21 +78,24 @@ void qrEventData(uint32_t id, uint8_t *mes)
 }
 
 void get_substring_between_newlines(const char *input, char *result) {
+    result[0] = '\0';
+    if (!input) { return; }
     const char *start_pos = strchr(input, 0x2);
-    if (start_pos) {
-        start_pos++;
-        const char *end_pos = strchr(start_pos, '\n');
-        if (end_pos) {
-            size_t len = end_pos - start_pos;
-            strncpy(result, start_pos, len);
-            result[len] = '\0';
-        }
-    }
+    if (!start_pos) {  return; }
+    start_pos++; // Bỏ qua ký tự 0x2
+    const char *end_pos = strchr(start_pos, '\n');
+    if (!end_pos) { return; }
+    size_t len = end_pos - start_pos;
+    if (len >= QR_SIZE) { len = QR_SIZE - 1; }
+    strncpy(result, start_pos, len);
+    result[len] = '\0';
 }
 
 void parse_string(const char *input, qrhandle *qr)
 {
+	if(input == NULL) return ;
 	char* temp = pvPortMalloc(sizeof(char)*QR_SIZE);
+	if(temp == NULL) return ;
     strcpy(temp, input);
     char *token;
     token = strtok(temp, ";");

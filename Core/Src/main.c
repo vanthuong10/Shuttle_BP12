@@ -93,7 +93,7 @@ UART_HandleTypeDef huart6;
 osThreadId_t mongooseTaskHandle;
 const osThreadAttr_t mongooseTask_attributes = {
   .name = "mongooseTask",
-  .stack_size = 2048 * 4,
+  .stack_size = 3072 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
