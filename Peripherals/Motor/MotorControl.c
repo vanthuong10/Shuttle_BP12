@@ -56,7 +56,6 @@ void MotorIsConnected(uint32_t id)
 		Kincoparameter.flagMotorConnected = true ;
 	}
 }
-
 void kincoRecieverCallback()
 {
 	MesRx.Canid = Cankinco->RxHeader.Identifier;
@@ -82,7 +81,6 @@ void kincoRecieverCallback()
 	{
 		MotorIsConnected(MesRx.Canid);
 	}
-
 	readParameter();
 }
 Message_Kinco_Can CreateMessage( uint32_t Res, uint32_t value )
@@ -239,6 +237,19 @@ void SetSpeed(int vl, uint32_t TPDO)
 
 }
 
+void SetSpeedAndEnable(bool en , int vl, uint32_t TPDO)
+{
+	Message_Kinco_Can temp;
+	int64_t dec = RPM_TO_DEC(vl);
+	uint8_t rx_data[8];
+	temp = CreateMessage(TargetSpeedRes, dec);
+	memcpy(rx_data, temp.value,sizeof(temp.value)) ;
+	rx_data[4] = en ? 0x0F : 0x06 ;
+	Cankinco->TxHeader.Identifier = TPDO;
+	FDCan_Write(Cankinco, rx_data, DATA_BYTE_6);
+
+}
+
 bool NMTmanagement (NMT_Command cmd, uint32_t MotorID)
 {
 	uint8_t buf[3] = {cmd, MotorID };
@@ -269,6 +280,7 @@ void readParameter()
 		}else
 		{
 			Kincoparam[i].flagMotorConnected = Kincoparameter.flagMotorConnected;
+
 		}
 
 	}
@@ -277,17 +289,20 @@ void readParameter()
 void motorControl( bool en, bool error, uint8_t dir, double speed )
 {
 	static bool isStop =  true ;
+	bool en_motor ;
 	if ((!en || error) && isStop == false)
 	{
 		Kincoparam[0].TargetSpeed = 0 ;
-		SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
+		en_motor = false ;
+		//SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
 		HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
 		isStop = true ;
 	} else if(en && !error)
 	{
+		en_motor  = true ;
 		if(isStop)
 		{
-			SetControlWord(ControlWord_EN, MotorID[0]); // enable motor
+			//SetControlWord(ControlWord_EN, MotorID[0]); // enable motor
 			HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_SET);
 			isStop = false;
 		}
@@ -303,7 +318,8 @@ void motorControl( bool en, bool error, uint8_t dir, double speed )
 			Kincoparam[0].TargetSpeed = 0 ;
 		}
 	}
-	SetSpeed(Kincoparam[0].TargetSpeed, SetSpeedPDO[0]);
+	//SetSpeed(Kincoparam[0].TargetSpeed, SetSpeedPDO[0]);
+	SetSpeedAndEnable(en_motor, Kincoparam[0].TargetSpeed, SetSpeedPDO[0]);
 }
 
 void motorErrorReset()

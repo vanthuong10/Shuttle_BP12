@@ -121,7 +121,7 @@ static bool checkMotorConnecting()
 	{
 		if(Kincoparam[0].flagMotorConnected)
 		{
-			Kincoparam[0].flagMotorConnected = false ;
+			Kincoparameter.flagMotorConnected = false ;
 		}
 		else
 		{
