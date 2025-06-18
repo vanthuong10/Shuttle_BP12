@@ -15,7 +15,6 @@
 
 static uint64_t timer_auto;
 static bool autoTask_suspended_state = false;
-static double toggle_auto[2];
 osThreadId_t AutoTaskHandle;
 const osThreadAttr_t AutoTask_attributes = {
   .name = "AutoTask",
@@ -59,17 +58,6 @@ static struct CmdStatus cmdstatus = {.currentStep = 0, .complete = false} ;
 
 /*************************************************/
 
-void changeAcceleration()
-{
-	if(!motorHandle.en || motorHandle.Error) return ;  // nếu động cơ không cho phép chạy hoặc có lỗi thì return
-	if(toggleValueState(&toggle_auto[0], motorHandle.targetSpeed)) {return;} // Không có thay đổi vận tốc thì return
-	double current_speed = rpmToSpeed(sensor_signal.motor_parameter->SpeedReal) ;
-	if(motorHandle.targetSpeed < current_speed)             // Chỉ tính khi giảm tốc
-	{
-		motorHandle.dec = calculateAcceleration(current_speed, motorHandle.targetSpeed, DISTANCE_QR_X - 0.1);
-		SDOProfileDec(speedToRps(motorHandle.dec), MotorID[0]);
-	}
-}
 /**
  * @brief   Set tốc độ trong thanh ghi cmd tốc độ.
 */
@@ -128,12 +116,29 @@ static void missionComplete(int state)
 	cmdstatus.complete = true;
 	cmdstatus.mission = false;
 	db_shuttle_run.cmdComplete = cmdstatus.complete;
-	char *buf = mg_mprintf("{ %m:%d }",
+	char buf[64];
+	memset(buf, 0,sizeof(buf));
+	mg_snprintf(buf, 64,"{ %m:%d }",
 				MG_ESC("status"), state);
 	struct mg_str json = mg_str(buf);
 	mqtt_publish(json, SELECT_COMPLETE_TOPIC);
-	free(buf);
 }
+
+static struct DBTest {
+	int stepCmd ;
+	uint64_t timerAutoTest ;
+	bool yQrPass ;
+	bool xQrPass ;
+}db_test;
+
+static void reset_db_test() {
+    memset(&db_test, 0, sizeof(db_test));
+}
+static void reset_motorhandle()
+{
+	memset(&motorHandle, 0 , sizeof(motorHandle));
+}
+
 
 /**
  * @brief   Thực hiện đổi bánh di chuyển.
@@ -400,6 +405,7 @@ static bool aStop()
 			}
 			break;
 		default:
+			motorHandle.en = false ;
 			return true ;
 			break;
 	}
@@ -411,6 +417,7 @@ static bool aStop()
 		flag_stop_shuttle.flag3 = false ;
 		flag_stop_shuttle.flag4 = false ;
 		aUnSetSpeed(SPEED_VERRY_LOW);
+		aSetSpeed(SPEED_ZERO) ;		 // Vận tốc về 0
 		SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
 		return true ;
 	}
@@ -432,7 +439,7 @@ static bool aTakeAction(int action)
 	bool state = false;
 	switch (action) {
 		case 10:
-		    aUnSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+		    aUnSetSpeed(SPEED_VERRY_LOW);
 		    aUnSetSpeed(SPEED_LOW);
 		    state = true ;
 		    break;
@@ -518,13 +525,14 @@ static bool runStep(char* targetQr, int targetDir, int proceed)
  */
 static void aResetFlag()
 {
-	memset(&flag_change_dir,'\0', sizeof(flag_change_dir)); // reset cờ chuyển hướng
-	memset(&flag_get_pack,'\0', sizeof(flag_get_pack)); // reset cờ lấy pallet
-	memset(&flag_put_pack,'\0', sizeof(flag_put_pack)); // reset cờ thả pallet
-	memset(&flag_run_step,'\0', sizeof(flag_run_step)); // reset cờ chạy theo bước
-	memset(&flag_take_action,'\0', sizeof(flag_take_action)); // reset cờ thực hiện hành động
-	memset(&flag_stop_shuttle,'\0', sizeof(flag_stop_shuttle)); // reset cờ hành động dừng shuttle
-	memset(&flag_run_near_qr,'\0', sizeof(flag_run_near_qr));  // reset cờ di chuyển 2 mã gần nhau
+	size_t size_flag = sizeof(FlagState) ;
+	memset(&flag_change_dir,'\0', size_flag); // reset cờ chuyển hướng
+	memset(&flag_get_pack,'\0', size_flag); // reset cờ lấy pallet
+	memset(&flag_put_pack,'\0', size_flag); // reset cờ thả pallet
+	memset(&flag_run_step,'\0', size_flag); // reset cờ chạy theo bước
+	memset(&flag_take_action,'\0', size_flag); // reset cờ thực hiện hành động
+	memset(&flag_stop_shuttle,'\0', size_flag); // reset cờ hành động dừng shuttle
+	memset(&flag_run_near_qr,'\0', size_flag);  // reset cờ di chuyển 2 mã gần nhau
 	flag_take_action.flag1 = true ; // reset thời gian
 	cmdstatus.speedReg = 0 ; // reset thanh ghi tốc độ
 
@@ -534,7 +542,7 @@ static void aResetFlag()
  * @brief   Chương trình tự động với tốc độ mặc định.
  * @param return: true nếu hoàn thành lệnh/ false nếu chưa hoàn thành hoặc không có lệnh
  */
-bool autoModeNomal()
+static bool autoModeNomal()
 {
 	if (server_cmd.newMission && !cmdstatus.mission) // nếu có nhiệm vụ mới và shuttle đang không có nhiệm vụ
 	{
@@ -556,36 +564,23 @@ bool autoModeNomal()
 	if(stepDone){
 		cmdstatus.currentStep++;
 		if (cmdstatus.currentStep >= cmdstatus.totalStep){
-			clearMission(); 	// xóa nhiệm vụ
 			missionComplete(1);  // gửi thông báo tới server
 		    db_shuttle_run.missionComplete ++ ;  // tăng số lệnh hoàn thành
-		    motorHandle.en = false ; // dừng động cơ
+		    //motorHandle.en = false ; // dừng động cơ
+		    reset_motorhandle();
 		    shuttleUnSetStatus(SHUTTLE_IS_RUNNING);
 		    shuttleSetStatus(SHUTTLE_IS_WAITING_CMD);
+			clearMission(); 	// xóa nhiệm vụ
 			return true ;
 		}
 	}
 	return false ;
 }
 
-static struct DBTest {
-	int stepCmd ;
-	uint64_t timerAutoTest ;
-	bool yQrPass ;
-	bool xQrPass ;
-}db_test;
-
-void reset_db_test() {
-    memset(&db_test, 0, sizeof(db_test));
-}
-void reset_motorhandle()
-{
-	memset(&motorHandle, 0 , sizeof(motorHandle));
-}
-
 /**
  * @brief   Task thực thi chương trình chạy tự động.
  */
+
 void Autotask(void *argument)
 {
 	db_test.stepCmd = 0 ;
@@ -638,7 +633,7 @@ void Autotask(void *argument)
 		motorHandle.Error = shuttleErrorState();
 		db_shuttle_info.currentStep = cmdstatus.currentStep ;
 		uint64_t now = mg_millis();
-		if(u_timer_expired(&timer_auto, 40, now))
+		if(u_timer_expired(&timer_auto, 30, now))
 		{
 			motorControl(motorHandle.en, motorHandle.Error, motorHandle.drirection, motorHandle.targetSpeed);
 		}
@@ -657,9 +652,9 @@ void autoTaskInit()
 
 void autoTaskSupend()
 {
-	server_cmd.adminCmd = 0;
 	if (!autoTask_suspended_state) {
 		missionComplete(0);
+		server_cmd.adminCmd = 0;
 		osThreadSuspend(AutoTaskHandle);
 		autoTask_suspended_state = true ;
 		MG_DEBUG(("AUTO TASK SUPEND \n"));

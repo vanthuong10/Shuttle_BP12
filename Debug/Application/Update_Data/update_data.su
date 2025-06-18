@@ -1,5 +1,5 @@
 ../Application/Update_Data/update_data.c:20:13:getInfoBatery	4	static
 ../Application/Update_Data/update_data.c:32:13:getInfoQrReader	4	static
 ../Application/Update_Data/update_data.c:38:6:ws_transmit_timer	616	static
-../Application/Update_Data/update_data.c:111:13:inforUpdatetask	456	static
-../Application/Update_Data/update_data.c:162:6:dataUpdateTaskInit	8	static
+../Application/Update_Data/update_data.c:111:13:inforUpdatetask	984	static
+../Application/Update_Data/update_data.c:163:6:dataUpdateTaskInit	8	static

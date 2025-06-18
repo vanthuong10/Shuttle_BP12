@@ -63,5 +63,4 @@
 "./Peripherals/QR_Reader/QrReader.o"
 "./Peripherals/adc/MCP3208.o"
 "./Peripherals/gpio/u_gpio.o"
-"./Peripherals/led/lib_RGB.o"
 "./Peripherals/oled_led/mb_display.o"

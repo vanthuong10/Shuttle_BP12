@@ -61,8 +61,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  .././Application/Main_Program/Auto/auto.h \
  .././Application/Update_Data/update_data.h \
  .././Application/Main_Program/Safety/safety.h \
- ../Application/Display/display.h ../Peripherals/led/lib_RGB.h \
- .././Peripherals/Hydraulic/hydraulic.h
+ ../Application/Display/display.h .././Peripherals/Hydraulic/hydraulic.h
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -130,5 +129,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 .././Application/Update_Data/update_data.h:
 .././Application/Main_Program/Safety/safety.h:
 ../Application/Display/display.h:
-../Peripherals/led/lib_RGB.h:
 .././Peripherals/Hydraulic/hydraulic.h:

@@ -10,8 +10,8 @@
 #include "string.h"
 #include "stdlib.h"
 qrhandle qr ;
-uint8_t QrBuffer[QR_SIZE] = {0};
-char qrTag[32];
+static uint8_t QrBuffer[QR_SIZE] = {0};
+static char qrTag[32];
 void get_substring_between_newlines(const char *input, char *result);
 void parse_string(const char *input, qrhandle *qr);
 UART_HandleTypeDef *qruart;

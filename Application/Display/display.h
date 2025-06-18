@@ -10,10 +10,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "lib_RGB.h"
 
 void displayInit();
-void shuttleSetLed(LEDSTATUS lv);
 void shuttle_started();
 
 #ifdef __cplusplus

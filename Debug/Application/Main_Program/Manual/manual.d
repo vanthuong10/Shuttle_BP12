@@ -61,7 +61,7 @@ Application/Main_Program/Manual/manual.o: \
  .././Peripherals/Motor/MotorControl.h \
  .././Peripherals/Hydraulic/hydraulic.h \
  .././Application/Main_Program/Safety/safety.h \
- ../Application/Display/display.h ../Peripherals/led/lib_RGB.h
+ ../Application/Display/display.h
 ../Application/Main_Program/Manual/manual.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
@@ -128,4 +128,3 @@ Application/Main_Program/Manual/manual.o: \
 .././Peripherals/Hydraulic/hydraulic.h:
 .././Application/Main_Program/Safety/safety.h:
 ../Application/Display/display.h:
-../Peripherals/led/lib_RGB.h:

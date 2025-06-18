@@ -136,7 +136,6 @@ static void processingDataTopicHandle() {
 	resetCommand();
 	if(!mg_json_get_num(mqtt_data.mqttm->data, "$.totalStep", &a)) return;  // return nếu không đúng định dạng json
 	server_cmd.totalStep = (int) a;
-	server_cmd.newMission = true ;
 //	printf("TotalStep: %d \n", server_cmd.totalStep);
 	if(server_cmd.totalStep >= STEP_MAX) { resetCommand(); return; } // return nếu gửi quá lệnh
 	for (int i = 0; i < server_cmd.totalStep; i++) {
@@ -155,6 +154,7 @@ static void processingDataTopicHandle() {
 		free(jpath);
 		free(str);
 	}
+	server_cmd.newMission = true ;
 }
 
 static void processingDataTopicRun()

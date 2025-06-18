@@ -15,9 +15,9 @@ extern "C" {
 #include "stdint.h"
 #include "sensorSignal.h"
 
-#define SHUTTLE_ID "001"
-#define TOPIC_HANDLE  "shuttle/handle/001"
-#define TOPIC_RUN     "shuttle/run/001"
+#define SHUTTLE_ID "002"
+#define TOPIC_HANDLE  "shuttle/handle/002"
+#define TOPIC_RUN     "shuttle/run/002"
 #define STEP_MAX 20
 
 typedef enum {
@@ -72,7 +72,6 @@ typedef struct {
 	bool newAdCmd;
 	uint8_t totalStep;
 	Step cmd_step[STEP_MAX] ;
-	char shuttleID[20];
 	uint8_t adminCmd;
 }ServerCommand;
 extern ServerCommand server_cmd ;

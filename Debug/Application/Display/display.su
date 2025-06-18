@@ -1,3 +1,3 @@
-../Application/Display/display.c:25:13:displaytask	32	static
-../Application/Display/display.c:81:6:displayInit	8	static
-../Application/Display/display.c:86:6:shuttle_started	4	static
+../Application/Display/display.c:24:13:displaytask	32	static
+../Application/Display/display.c:69:6:displayInit	8	static
+../Application/Display/display.c:74:6:shuttle_started	4	static

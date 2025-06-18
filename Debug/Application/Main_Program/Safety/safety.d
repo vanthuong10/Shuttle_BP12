@@ -59,8 +59,7 @@ Application/Main_Program/Safety/safety.o: \
  .././Peripherals/Motor/MotorControl.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- .././Peripherals/Hydraulic/hydraulic.h ../Application/Display/display.h \
- ../Peripherals/led/lib_RGB.h
+ .././Peripherals/Hydraulic/hydraulic.h ../Application/Display/display.h
 ../Application/Main_Program/Safety/safety.h:
 ../Application/Database/database.h:
 .././Application/Signal/sensorSignal.h:
@@ -126,4 +125,3 @@ Application/Main_Program/Safety/safety.o: \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 .././Peripherals/Hydraulic/hydraulic.h:
 ../Application/Display/display.h:
-../Peripherals/led/lib_RGB.h:

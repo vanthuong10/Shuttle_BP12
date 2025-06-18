@@ -399,7 +399,7 @@ static char* getShuttleErrorStatus()
 static void safetyTask(void *argument)
 {
 	memset(shuttle_error_table,'\0', sizeof(shuttle_error_table));
-	memset(shuttle_alarm_table,'\0', sizeof(shuttle_error_table));
+	memset(shuttle_alarm_table,'\0', sizeof(shuttle_alarm_table));
 	for(;;)
 	{
 		db_shuttle_info.errorStatus = getShuttleErrorStatus();

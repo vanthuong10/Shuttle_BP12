@@ -70,7 +70,6 @@
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Auto"/>
 									<listOptionValue builtIn="false" value=".././Application/Update_Data"/>
 									<listOptionValue builtIn="false" value=".././Application/Main_Program/Safety"/>
-									<listOptionValue builtIn="false" value="../Peripherals/led"/>
 									<listOptionValue builtIn="false" value="../Application/Display"/>
 									<listOptionValue builtIn="false" value="../Peripherals/oled_led"/>
 								</option>

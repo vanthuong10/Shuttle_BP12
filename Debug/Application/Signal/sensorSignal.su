@@ -1,8 +1,8 @@
-../Application/Signal/sensorSignal.c:38:7:mapValue	32	static
-../Application/Signal/sensorSignal.c:47:7:getPressure	16	static
-../Application/Signal/sensorSignal.c:57:13:getRFButtonState	16	static
-../Application/Signal/sensorSignal.c:99:6:getDataBms	8	static
-../Application/Signal/sensorSignal.c:117:13:checkMotorConnecting	24	static
+../Application/Signal/sensorSignal.c:37:7:mapValue	32	static
+../Application/Signal/sensorSignal.c:46:7:getPressure	16	static
+../Application/Signal/sensorSignal.c:56:13:getRFButtonState	16	static
+../Application/Signal/sensorSignal.c:98:6:getDataBms	8	static
+../Application/Signal/sensorSignal.c:116:13:checkMotorConnecting	24	static
 ../Application/Signal/sensorSignal.c:137:13:checkQrReaderConnecting	24	static
 ../Application/Signal/sensorSignal.c:158:13:motorStarting	16	static
 ../Application/Signal/sensorSignal.c:183:13:qrReaderStarting	16	static
@@ -11,4 +11,4 @@
 ../Application/Signal/sensorSignal.c:225:6:canOpenCallBack	16	static
 ../Application/Signal/sensorSignal.c:238:6:canOpenInit	8	static
 ../Application/Signal/sensorSignal.c:245:6:IOControl	40	static
-../Application/Signal/sensorSignal.c:283:6:sensorTaskInit	8	static
+../Application/Signal/sensorSignal.c:284:6:sensorTaskInit	8	static

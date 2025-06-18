@@ -1,9 +1,0 @@
-../Peripherals/led/lib_RGB.c:23:6:Reset_LED	2
-../Peripherals/led/lib_RGB.c:34:6:WS2812_Send	6
-../Peripherals/led/lib_RGB.c:70:6:Led_status	8
-../Peripherals/led/lib_RGB.c:100:6:HAL_TIM_PWM_PulseFinishedCallback	1
-../Peripherals/led/lib_RGB.c:111:6:CHARGE	34
-../Peripherals/led/lib_RGB.c:275:6:Setled_charge	1
-../Peripherals/led/lib_RGB.c:284:6:Setled	7
-../Peripherals/led/lib_RGB.c:327:6:Set_Brightness	4
-../Peripherals/led/lib_RGB.c:342:6:LedRGBInit	1

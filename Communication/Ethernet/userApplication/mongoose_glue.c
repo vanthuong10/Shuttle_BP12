@@ -8,7 +8,7 @@
 #include "mongoose_glue.h"
 #include "cmsis_os.h"
 
-struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,15) ,//MG_U32(10,14,16,34) ,
+struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,14) ,//MG_U32(10,14,16,34) ,
 									 .mask = MG_U32(255,255,254,0),
 									 .gw   = MG_U32(10,14,64,1),
 									 .mqttBroker = "mqtt://10.14.64.11:1991",
@@ -20,7 +20,7 @@ struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,15) ,//MG_U32(10,14
 									 .s_pub_info = "shuttle/information",
 									 .s_pub_report = "shuttle/report" ,
 									 .s_pub_complete = "shuttle/completeMission" ,
-									 .no = "001"  };
+									 .no = "002"  };
 uint8_t *tcpConnectState;
 osMutexId_t mqttMutex;
 
@@ -121,6 +121,7 @@ void glue_mqtt_on_message(struct mg_connection *c, struct mg_str topic,
 
 void mqtt_publish(struct mg_str message, SelectTopic selectTopic)
 {
+	glue_lock();
 	struct mg_mqtt_opts pub_opts;
 	memset(&pub_opts, 0, sizeof(pub_opts));
 	switch (selectTopic) {
@@ -136,15 +137,13 @@ void mqtt_publish(struct mg_str message, SelectTopic selectTopic)
 		default:
 			break;
 	}
-	pub_opts.qos = 1;
+	pub_opts.qos = 0;
 	pub_opts.message = message;
 	if (g_mqtt_conn != NULL)
 	{
-		glue_lock();
 		mg_mqtt_pub(g_mqtt_conn, &pub_opts);
-	    glue_unlock();
 	}
-
+    glue_unlock();
 }
 
 void glue_mqtt_on_cmd(struct mg_connection *c, struct mg_mqtt_message *mm) {

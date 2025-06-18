@@ -61,7 +61,7 @@ Application/Main_Program/Auto/auto.o: \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  .././Peripherals/Hydraulic/hydraulic.h \
  .././Application/Main_Program/Safety/safety.h \
- ../Application/Display/display.h ../Peripherals/led/lib_RGB.h
+ ../Application/Display/display.h
 ../Application/Database/database.h:
 .././Application/Signal/sensorSignal.h:
 .././Peripherals/gpio/u_gpio.h:
@@ -128,4 +128,3 @@ Application/Main_Program/Auto/auto.o: \
 .././Peripherals/Hydraulic/hydraulic.h:
 .././Application/Main_Program/Safety/safety.h:
 ../Application/Display/display.h:
-../Peripherals/led/lib_RGB.h:

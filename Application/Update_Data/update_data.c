@@ -13,7 +13,7 @@ osThreadId_t SyncTaskHandle;
 osMutexId_t jsonCreateMutex;
 const osThreadAttr_t SyncTask_attributes = {
   .name = "SyncTask",
-  .stack_size = 512 * 4,
+  .stack_size = 640 * 4,
   .priority = (osPriority_t) osPriorityNormal2,
 };
 
@@ -115,6 +115,7 @@ static void inforUpdatetask(void *argument)
 	db_shuttle_info.no = SHUTTLE_ID ;
 	db_shuttle_run.statusReg = 0 ;
 	static char tmp_buf[32];
+	char buf[512];
 	for(;;)
 	{
 		mg_snprintf(db_shuttle_info.ip, sizeof(db_shuttle_info.ip), "%M", mg_print_ip4, &mif->ip);
@@ -131,7 +132,8 @@ static void inforUpdatetask(void *argument)
 		{
 			db_shuttle_run.shuttleCurrentStatus = 0 ;
 		}
-		char *buf = mg_mprintf("{ %m:%m, %m:%m, %m:%d, %m:%d, %m:%d, %m:%.4f, %m:%.4f, %m:%.4f, %m:%.4f, %m:%d, %m:%d, %m:%d, %m:%m, %m:%.4f, %m:%d, %m:%m, %m:%d, %m:%d, %m:%.4f, %m:%.4f}",
+		memset(buf, 0 , sizeof(buf));
+		mg_snprintf(buf,512,"{ %m:%m, %m:%m, %m:%d, %m:%d, %m:%d, %m:%.4f, %m:%.4f, %m:%.4f, %m:%.4f, %m:%d, %m:%d, %m:%d, %m:%m, %m:%.4f, %m:%d, %m:%m, %m:%d, %m:%d, %m:%.4f, %m:%.4f}",
 					MG_ESC("no"), MG_ESC(db_shuttle_info.no),
 					MG_ESC("ip"), MG_ESC(db_shuttle_info.ip),
 					MG_ESC("shuttleMode"),db_shuttle_run.shuttleMode,
@@ -154,7 +156,6 @@ static void inforUpdatetask(void *argument)
 					MG_ESC("pressure"),sensor_signal.pressure_sensor);
 			struct mg_str json = mg_str(buf);
 			mqtt_publish(json, SELECT_INFO_TOPIC);
-		free(buf);
 		osDelay(300/ portTICK_PERIOD_MS);
 	}
 }
