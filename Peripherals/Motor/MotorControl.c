@@ -286,25 +286,57 @@ void readParameter()
 	}
 }
 
+//void motorControl( bool en, bool error, uint8_t dir, double speed )
+//{
+//	bool en_motor = false;
+//	if (en && !error) {
+//		en_motor = true;
+//	} else {
+//		en_motor = false;
+//		Kincoparam[0].TargetSpeed = 0 ;
+//	}
+//
+//	if (dir == 1 || dir == 4) {
+//		Kincoparam[0].TargetSpeed = speedToRpm(speed);
+//	} else if (dir == 3 || dir == 2) {
+//		Kincoparam[0].TargetSpeed = -speedToRpm(speed);
+//	} else {
+//		Kincoparam[0].TargetSpeed = 0;
+//	}
+//
+//	SetSpeedAndEnable(en_motor, Kincoparam[0].TargetSpeed, SetSpeedPDO[0]);
+//}
+
 void motorControl( bool en, bool error, uint8_t dir, double speed )
 {
-	bool en_motor = false;
-	if (en && !error) {
-		en_motor = true;
-	} else {
-		en_motor = false;
+	static bool isStop =  true ;
+	if ((!en || error) && isStop == false)
+	{
 		Kincoparam[0].TargetSpeed = 0 ;
-	}
+		SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
+		HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
+		isStop = true ;
+	} else if(en && !error)
+	{
+		if(isStop)
+		{
+			SetControlWord(ControlWord_EN, MotorID[0]); // enable motor
+			HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_SET);
+			isStop = false;
+		}
 
-	if (dir == 1 || dir == 4) {
-		Kincoparam[0].TargetSpeed = speedToRpm(speed);
-	} else if (dir == 3 || dir == 2) {
-		Kincoparam[0].TargetSpeed = -speedToRpm(speed);
-	} else {
-		Kincoparam[0].TargetSpeed = 0;
+		if(dir == 1 || dir == 4)
+		{
+			Kincoparam[0].TargetSpeed = speedToRpm(speed);
+		}else if(dir == 3 || dir == 2)
+		{
+			Kincoparam[0].TargetSpeed = -speedToRpm(speed);
+		}else
+		{
+			Kincoparam[0].TargetSpeed = 0 ;
+		}
 	}
-
-	SetSpeedAndEnable(en_motor, Kincoparam[0].TargetSpeed, SetSpeedPDO[0]);
+	SetSpeed(Kincoparam[0].TargetSpeed, SetSpeedPDO[0]);
 }
 
 void motorErrorReset()

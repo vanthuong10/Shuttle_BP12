@@ -154,14 +154,6 @@ SECTIONS
     __bss_end__ = _ebss;
   } >DTCMRAM
   
-  /* RAM_D2 section for user-defined variables */
-	.ram_D2 :
-	{
-	    . = ALIGN(4);
-	    *(.dtcmram)
-	    *(.dtcmram*)
-	    . = ALIGN(4);
-	} >RAM_D2
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :

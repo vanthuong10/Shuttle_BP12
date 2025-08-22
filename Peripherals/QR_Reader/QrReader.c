@@ -129,7 +129,7 @@ void parse_string(const char *input, qrhandle *qr)
  * 	      qrcmd  : mã QR từ server cần đọc
  * return: true nếu đúng mã/ flase nếu sai mã
  */
-bool checkQrcode(char* Qrcode, char* qrcmd)
+bool checkQrcode(char* Qrcode, const char* qrcmd)
 {
 	return strcmp(qrcmd,Qrcode) == 0 ? true : false ;
 }

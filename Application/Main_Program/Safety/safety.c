@@ -12,6 +12,91 @@
 #include "hydraulic.h"
 #include "display.h"
 
+#define TAG_LIMIT_NUM 2
+#define DISTANCE_ERROR_SET 60
+const char tag_limit_front[TAG_LIMIT_NUM][32] = { "X0000Y0017",
+												  "X0000Y0004",
+};
+
+const char tag_limit_back[TAG_LIMIT_NUM][32] = { "X0000Y0016",
+												  "X0000Y0021",
+};
+
+const char tag_limit_left[TAG_LIMIT_NUM][32] = { "X0000Y0004",
+												  "X0000Y0021",
+};
+
+const char tag_limit_right[TAG_LIMIT_NUM][32] = { "X0000Y0017",
+												  "X0000Y0016",
+};
+
+static bool error_limit_tag_state = false ;
+struct ShuttleErrorStatus check_limit_tag() {
+	static struct ShuttleErrorStatus error = { false, 0, 0 };
+	if(!error_limit_tag_state)
+	{
+		memset(&error, 0 , sizeof(error));
+	}
+	ShuttleAxis axis = getAxisShuttle();
+	int dir = 0 ;
+
+	if(axis == AXIS_X && sensor_signal.motor_parameter->TargetSpeed > 0)
+	{
+		dir = 4 ;
+	}else if(axis == AXIS_X && sensor_signal.motor_parameter->TargetSpeed < 0)
+	{
+		dir = 2 ;
+	}else if(axis == AXIS_Y && sensor_signal.motor_parameter->TargetSpeed > 0)
+	{
+		dir = 1 ;
+	}else if(axis == AXIS_Y && sensor_signal.motor_parameter->TargetSpeed < 0)
+	{
+		dir = 3 ;
+	}else
+	{
+		dir = 0 ;
+	}
+
+	for (int i = 0; i < TAG_LIMIT_NUM; i++) {
+
+		switch (dir) {
+			case 1:
+				if(checkQrcode(sensor_signal.qr_sensor->Tag, tag_limit_front[i]) && sensor_signal.qr_sensor->distanceX > DISTANCE_ERROR_SET)
+				{
+					error_limit_tag_state = true ;
+				}
+				break;
+			case 2:
+				if(checkQrcode(sensor_signal.qr_sensor->Tag, tag_limit_right[i]) && sensor_signal.qr_sensor->distanceY < -DISTANCE_ERROR_SET)
+				{
+					error_limit_tag_state = true ;
+				}
+				break;
+			case 3:
+				if(checkQrcode(sensor_signal.qr_sensor->Tag, tag_limit_back[i]) && sensor_signal.qr_sensor->distanceX < -DISTANCE_ERROR_SET)
+				{
+					error_limit_tag_state = true ;
+				}
+				break;
+			case 4:
+				if(checkQrcode(sensor_signal.qr_sensor->Tag, tag_limit_left[i]) && sensor_signal.qr_sensor->distanceY > DISTANCE_ERROR_SET)
+				{
+					error_limit_tag_state = true ;
+				}
+				break;
+			default:
+				break;
+		}
+	}
+	if(error_limit_tag_state)
+	{
+		error.errorState = true ;
+		error.errortype  = 1 ;
+		error.ErrorCode  = 1 ;
+	}
+	return error ;
+}
+
 static char NO_ERROR_STATUS[10] =  "00";
 static bool emg_state = false ;
 
@@ -50,11 +135,11 @@ static bool isQrChanged(char* current) {
 }
 /**
  * @brief   Kiểm tra tín hiêu cảm biến tác động.
- * @return: true nếu có tác động đủ 5 lần
+ * @return: true nếu có tác động đủ 3 lần
  */
 bool sensorTrigger(int *tmp, DI_SENSOR sensor) {
 	if( sensor == HIGH ) (*tmp) ++;
-	if(*tmp >= 5) { return true ; }
+	if(*tmp >= 3) { return true ; }
 	return false;
 }
 /**
@@ -266,22 +351,22 @@ static struct ShuttleErrorStatus checkQrConnectionError()
 	}
 	return error;
 }
-/**
- * @brief   Kiểm tra Shttle đọc được mã dừng khẩn .
- * @return:  trạng thai lỗi nếu đọc được mã dừng khẩn
- */
-static struct ShuttleErrorStatus checkTagEmg()
-{
-	struct ShuttleErrorStatus error = { false, 0, 0 };
-	if((bool) db_shuttle_run.shuttleMode) return error;  // Chế độ manual không cần kiểm tra lỗi
-	if(checkQrcode(sensor_signal.qr_sensor->Tag, TAG_EMG))
-	{
-		error.errorState = true ;
-		error.errortype  = 1 ;
-		error.ErrorCode  = 1 ;
-	}
-	return error ;
-}
+///**
+// * @brief   Kiểm tra Shttle đọc được mã dừng khẩn .
+// * @return:  trạng thai lỗi nếu đọc được mã dừng khẩn
+// */
+//static struct ShuttleErrorStatus checkTagEmg()
+//{
+//	struct ShuttleErrorStatus error = { false, 0, 0 };
+//	if((bool) db_shuttle_run.shuttleMode) return error;  // Chế độ manual không cần kiểm tra lỗi
+//	if(checkQrcode(sensor_signal.qr_sensor->Tag, TAG_EMG))
+//	{
+//		error.errorState = true ;
+//		error.errortype  = 1 ;
+//		error.ErrorCode  = 1 ;
+//	}
+//	return error ;
+//}
 /**
  * @brief   Kiểm tra quá tải Shuttle thông qua áp suất thủy lực .
  * @return:  trạng thai lỗi nếu có
@@ -360,7 +445,7 @@ static char* getShuttleErrorStatus()
 {
 	shuttle_error_table[0] = checkMotorError();
 	shuttle_error_table[1] = checkQrConnectionError();
-	shuttle_error_table[2] = checkTagEmg();
+	shuttle_error_table[2] = check_limit_tag();
 	shuttle_error_table[3] = checkOverLoad();
 	shuttle_error_table[4] = checkOverDistanceQr(&pulse_safety);
 	shuttle_error_table[5] = checkOverTimeHydraulic();
@@ -420,6 +505,7 @@ static void safetyTask(void *argument)
 			memset(photoelectric_ss_state, 0, sizeof(photoelectric_ss_state));
 			resetErrorHydraulic(); // reset lỗi thủy lực
 			overLoadState = false ;
+			error_limit_tag_state = false;
 		}
 		osDelay(20/portTICK_PERIOD_MS);
 	}

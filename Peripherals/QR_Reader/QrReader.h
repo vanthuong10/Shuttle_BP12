@@ -30,7 +30,7 @@ extern qrhandle qr ;
 
 void qrInit();
 void qrEventData(uint32_t id, uint8_t *mes);
-bool checkQrcode(char* Qrcode, char* qrcmd);
+bool checkQrcode(char* Qrcode, const char* qrcmd);
 #ifdef __cplusplus
 }
 #endif

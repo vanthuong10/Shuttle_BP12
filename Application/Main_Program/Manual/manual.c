@@ -73,7 +73,7 @@ void Manualtask(void *argument)
 				break;
 		}
 		bool m_error = false;
-		if(shuttle_error_table[0].errorState || shuttle_alarm_table[0].alarmState || shuttle_error_table[4].errorState)
+		if(shuttle_error_table[0].errorState || shuttle_alarm_table[0].alarmState || shuttle_error_table[4].errorState || shuttle_error_table[2].errorState )
 		{
 			m_error = true ;
 		}

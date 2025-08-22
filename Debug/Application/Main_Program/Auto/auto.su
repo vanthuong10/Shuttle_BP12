@@ -16,7 +16,7 @@
 ../Application/Main_Program/Auto/auto.c:475:13:runStep	32	static
 ../Application/Main_Program/Auto/auto.c:526:13:aResetFlag	16	static
 ../Application/Main_Program/Auto/auto.c:545:13:autoModeNomal	24	static
-../Application/Main_Program/Auto/auto.c:584:6:Autotask	32	static
-../Application/Main_Program/Auto/auto.c:644:6:autoTaskInit	8	static
-../Application/Main_Program/Auto/auto.c:653:6:autoTaskSupend	8	static
-../Application/Main_Program/Auto/auto.c:664:6:autoTaskResume	8	static
+../Application/Main_Program/Auto/auto.c:583:6:Autotask	32	static
+../Application/Main_Program/Auto/auto.c:646:6:autoTaskInit	8	static
+../Application/Main_Program/Auto/auto.c:655:6:autoTaskSupend	8	static
+../Application/Main_Program/Auto/auto.c:666:6:autoTaskResume	8	static

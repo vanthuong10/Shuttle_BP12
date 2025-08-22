@@ -566,7 +566,6 @@ static bool autoModeNomal()
 		if (cmdstatus.currentStep >= cmdstatus.totalStep){
 			missionComplete(1);  // gửi thông báo tới server
 		    db_shuttle_run.missionComplete ++ ;  // tăng số lệnh hoàn thành
-		    //motorHandle.en = false ; // dừng động cơ
 		    reset_motorhandle();
 		    shuttleUnSetStatus(SHUTTLE_IS_RUNNING);
 		    shuttleSetStatus(SHUTTLE_IS_WAITING_CMD);
@@ -601,6 +600,7 @@ void Autotask(void *argument)
 					cmdstatus.mission = false;   // no mission
 					server_cmd.newMission = false ; // reset flag get mission
 					aResetFlag();  // reset các cờ phục vụ chạy auto
+					aSetSpeed(SPEED_ZERO) ;		 // Vận tốc về 0
 				}
 				break;
 			case 1: /* lệnh chạy shuttle mặc định*/
@@ -614,8 +614,9 @@ void Autotask(void *argument)
 			default:
 				break;
 		}
-		db_shuttle_run.packageStatus = getPackageState();
-		switch (db_shuttle_run.packageStatus) {
+		if (server_cmd.adminCmd != 0) {
+			db_shuttle_run.packageStatus = getPackageState();
+			switch (db_shuttle_run.packageStatus) {
 			case 0:
 				aSetSpeed(SPEED_HIGH);
 				aUnSetSpeed(SPEED_NOMAL);
@@ -628,12 +629,13 @@ void Autotask(void *argument)
 				aSetSpeed(SPEED_NOMAL);
 				aUnSetSpeed(SPEED_HIGH);
 				break;
+			}
 		}
 		aSelectSpeed();  // Set tốc độ động cơ
 		motorHandle.Error = shuttleErrorState();
 		db_shuttle_info.currentStep = cmdstatus.currentStep ;
 		uint64_t now = mg_millis();
-		if(u_timer_expired(&timer_auto, 30, now))
+		if(u_timer_expired(&timer_auto, 40, now))
 		{
 			motorControl(motorHandle.en, motorHandle.Error, motorHandle.drirection, motorHandle.targetSpeed);
 		}
@@ -652,9 +654,9 @@ void autoTaskInit()
 
 void autoTaskSupend()
 {
+	server_cmd.adminCmd = 0;
 	if (!autoTask_suspended_state) {
 		missionComplete(0);
-		server_cmd.adminCmd = 0;
 		osThreadSuspend(AutoTaskHandle);
 		autoTask_suspended_state = true ;
 		MG_DEBUG(("AUTO TASK SUPEND \n"));

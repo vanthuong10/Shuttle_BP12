@@ -14,10 +14,10 @@
 ../Peripherals/Motor/MotorControl.c:240:6:SetSpeedAndEnable	120	static
 ../Peripherals/Motor/MotorControl.c:253:6:NMTmanagement	24	static
 ../Peripherals/Motor/MotorControl.c:267:6:readParameter	16	static
-../Peripherals/Motor/MotorControl.c:289:6:motorControl	32	static
-../Peripherals/Motor/MotorControl.c:310:6:motorErrorReset	8	static
-../Peripherals/Motor/MotorControl.c:318:8:rpmToSpeed	40	static
-../Peripherals/Motor/MotorControl.c:328:5:speedToRpm	40	static
-../Peripherals/Motor/MotorControl.c:338:5:speedToRps	16	static
-../Peripherals/Motor/MotorControl.c:343:5:distanceToPulses	40	static
-../Peripherals/Motor/MotorControl.c:356:8:calculateAcceleration	56	static
+../Peripherals/Motor/MotorControl.c:310:6:motorControl	24	static
+../Peripherals/Motor/MotorControl.c:342:6:motorErrorReset	8	static
+../Peripherals/Motor/MotorControl.c:350:8:rpmToSpeed	40	static
+../Peripherals/Motor/MotorControl.c:360:5:speedToRpm	40	static
+../Peripherals/Motor/MotorControl.c:370:5:speedToRps	16	static
+../Peripherals/Motor/MotorControl.c:375:5:distanceToPulses	40	static
+../Peripherals/Motor/MotorControl.c:388:8:calculateAcceleration	56	static

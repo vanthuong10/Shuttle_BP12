@@ -8,7 +8,7 @@
 #include "mongoose_glue.h"
 #include "cmsis_os.h"
 
-struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,14) ,//MG_U32(10,14,16,34) ,
+struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,15) ,//MG_U32(10,14,16,34) ,
 									 .mask = MG_U32(255,255,254,0),
 									 .gw   = MG_U32(10,14,64,1),
 									 .mqttBroker = "mqtt://10.14.64.11:1991",
