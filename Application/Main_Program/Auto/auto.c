@@ -242,22 +242,42 @@ static bool aGetPack()
 	 * flag2 : Change_acc
 	 * */
 
-    aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
-	if(abs(qr.distanceY) <= 3)
-	{
-		flag_get_pack.flag1 = true ; // nếu lệch 3 mm
-		flag_get_pack.flag2 = false;
-	}else
-	{
-		if(!flag_get_pack.flag2) // nếu chưa thay đổi gia tốc
-		{
-			flag_get_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-		}else{
-			if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
-			else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
-		}
-	}
-	if (flag_get_pack.flag1) {
+	aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+	    ShuttleAxis current_axis  = getAxisShuttle() ;
+	    switch ((int)current_axis) {
+			case AXIS_X:
+				if(abs(qr.distanceY) <= 1)
+				{
+					flag_get_pack.flag1 = true ; // nếu lệch 3 mm
+					flag_get_pack.flag2 = false ;
+				}else
+				{
+					if (!flag_get_pack.flag2) // nếu chưa thay đổi gia tốc
+					{
+						flag_get_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+					} else {
+						if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
+						else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
+					}
+				}
+				break ;
+			case AXIS_Y:
+				if(abs(qr.distanceX) <=1)
+				{
+					flag_get_pack.flag3 = true ; // nếu lệch 3mm
+					flag_get_pack.flag4 = false ;
+				}else {
+					if(!flag_get_pack.flag4) // nếu chưa thay đổi gia tốc
+					{
+						flag_get_pack.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+					}else {
+						if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
+						else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
+					}
+				}
+				break;
+	    }
+	if (flag_get_pack.flag1 || flag_get_pack.flag3 || motorHandle.drirection == 0) {
 		motorHandle.en = false;  // dừng motor
 		shuttleSetStatus(SHUTTLE_IS_LIFT_PALLET);
 		if (controlCylinder(CYLINDER_PALLET_UP, true))  // nâng pallet
@@ -286,21 +306,42 @@ static bool aPutPack()
 	 * */
 
     aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
-	if(abs(qr.distanceY) <= 3)
-	{
-		flag_put_pack.flag1 = true ; // nếu lệch 3 mm
-		flag_put_pack.flag2 = false ;
-	}else
-	{
-		if (!flag_put_pack.flag2) // nếu chưa thay đổi gia tốc
-		{
-			flag_put_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-		} else {
-			if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
-			else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
-		}
-	}
-	if (flag_put_pack.flag1) {
+    ShuttleAxis current_axis  = getAxisShuttle() ;
+    switch ((int)current_axis) {
+		case AXIS_X:
+			if(abs(qr.distanceY) <= 1)
+			{
+				flag_put_pack.flag1 = true ; // nếu lệch 3 mm
+				flag_put_pack.flag2 = false ;
+			}else
+			{
+				if (!flag_put_pack.flag2) // nếu chưa thay đổi gia tốc
+				{
+					flag_put_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+				} else {
+					if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
+					else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
+				}
+			}
+			break ;
+		case AXIS_Y:
+			if(abs(qr.distanceX) <=1)
+			{
+				flag_put_pack.flag3 = true ; // nếu lệch 3mm
+				flag_put_pack.flag4 = false ;
+			}else {
+				if(!flag_put_pack.flag4) // nếu chưa thay đổi gia tốc
+				{
+					flag_put_pack.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
+				}else {
+					if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
+					else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
+				}
+			}
+			break;
+    }
+
+	if (flag_put_pack.flag1 || flag_put_pack.flag3 || motorHandle.drirection == 0) {
 		motorHandle.en = false;  // dừng motor
 		shuttleSetStatus(SHUTTLE_IS_LOWER_PALLET);
 		if (controlCylinder(CYLINDER_PALLET_DOWN, true))  // hạ pallet
@@ -310,6 +351,7 @@ static bool aPutPack()
 			shuttleUnSetStatus(SHUTTLE_IS_LOWER_PALLET);
 			motorHandle.en = true;
 			flag_put_pack.flag1 = false;
+			flag_put_pack.flag3 = false;
 			SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
 			return true;
 		}
@@ -376,7 +418,7 @@ static bool aStop()
 	ShuttleAxis current_axis  = getAxisShuttle() ;
 	switch ((int)current_axis) {
 		case AXIS_X:
-			if(abs(qr.distanceY) <= 3)
+			if(abs(qr.distanceY) <= 1)
 			{
 				flag_stop_shuttle.flag2 = true ;
 			}else{
@@ -384,13 +426,13 @@ static bool aStop()
 				{
 					flag_stop_shuttle.flag3 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
 				}else{
-					if(sensor_signal.qr_sensor->distanceY >3) {motorHandle.drirection = 2;} // qua phải
-					else if (sensor_signal.qr_sensor->distanceY <-3) {motorHandle.drirection = 4;} // qua trái
+					if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
+					else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
 				}
 			}
 			break;
 		case AXIS_Y:
-			if(abs(qr.distanceX) <= 3)
+			if(abs(qr.distanceX) <= 1)
 			{
 				flag_stop_shuttle.flag1 = true ;
 			}else
@@ -399,8 +441,8 @@ static bool aStop()
 				{
 					flag_stop_shuttle.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
 				}else{
-	    			if(sensor_signal.qr_sensor->distanceX >3) {motorHandle.drirection = 3;} // chạy lùi
-	    			else if (sensor_signal.qr_sensor->distanceX <-3) {motorHandle.drirection = 1;} // chạy tiến
+	    			if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
+	    			else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
 				}
 			}
 			break;
@@ -640,6 +682,7 @@ void Autotask(void *argument)
 			motorControl(motorHandle.en, motorHandle.Error, motorHandle.drirection, motorHandle.targetSpeed);
 		}
 		osDelay(10);
+
 	}
 }
 

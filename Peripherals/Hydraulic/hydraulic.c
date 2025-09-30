@@ -14,7 +14,7 @@
 
 static osSemaphoreId_t pumpSemaphoreHandle; // Semaphore cho bơm
 static const uint64_t TIMER_LIMIT_HYDRAULIC = 5000 ; // 5000 ms
-static const uint64_t TIMER_DELAY_OFF_PUMP = 100 ; // 500 ms
+static const uint64_t TIMER_DELAY_OFF_PUMP = 300 ; // 500 ms
 static uint64_t timer_error_hydarulic = 0 ;
 static uint64_t timer_wait_hydraulic = 0 ;
 static bool hydraulic_wait = false ;

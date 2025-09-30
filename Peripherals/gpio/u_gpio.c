@@ -18,7 +18,7 @@ DoHandle outputGpio = { .resetDriver  = {.Port = GPIOF , .gpioPin = GPIO_PIN_5  
 						.valveL1	  = {.Port = GPIOI , .gpioPin = GPIO_PIN_8  },
 						.valveL2	  = {.Port = GPIOG , .gpioPin = GPIO_PIN_15 },
 						.valveL3	  = {.Port = GPIOK , .gpioPin = GPIO_PIN_4  },
-						.brake  	  = {.Port = GPIOB , .gpioPin = GPIO_PIN_8  }};
+						.qStop        = {.Port = GPIOB , .gpioPin = GPIO_PIN_8  }};
 
 
 /* @brief     Configure input signal pins
@@ -56,6 +56,7 @@ GPIO_UserHandle OverTemmpature      = {.Port =  GPIOK , .gpioPin = GPIO_PIN_5};
 GPIO_UserHandle OpenBrake   		= {.Port =  GPIOG , .gpioPin = GPIO_PIN_10};
 GPIO_UserHandle EmgSwitch        	= {.Port =  GPIOB , .gpioPin = GPIO_PIN_2};
 GPIO_UserHandle SwitchSelectMode    = {.Port =  GPIOJ , .gpioPin = GPIO_PIN_1};
+
 
 static SENSOR_STATUS inputSignal ;
 /**

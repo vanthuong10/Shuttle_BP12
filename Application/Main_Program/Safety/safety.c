@@ -12,22 +12,52 @@
 #include "hydraulic.h"
 #include "display.h"
 
-#define TAG_LIMIT_NUM 2
+#define TAG_LIMIT_NUM 6
+#define TAG_SKIP_NUM 7
+#define TAG_SKIP_OBJ_NUM 6
 #define DISTANCE_ERROR_SET 60
-const char tag_limit_front[TAG_LIMIT_NUM][32] = { "X0000Y0017",
-												  "X0000Y0004",
+const char tag_limit_front[TAG_LIMIT_NUM][32] = { "X0000Y0045",
+												  "X0004Y0001",
 };
 
-const char tag_limit_back[TAG_LIMIT_NUM][32] = { "X0000Y0016",
+const char tag_limit_back[TAG_LIMIT_NUM][32] = { "X0000Y0000",
+												 "X0000Y0023",
+												 "X0015Y0001",
+												 "X0015Y0002"
+
+};
+
+const char tag_limit_left[TAG_LIMIT_NUM][32] = { "X0000Y0045",
+												 "X0000Y0025",
+												 "X0000Y0002",
+												 "X0004Y0002",
+												 "X0015Y0001",
+												 "X0015Y0000"
+};
+
+const char tag_limit_right[TAG_LIMIT_NUM][32] = { "X0004Y0001",
+												  "X0003Y0004",
+												  "X0000Y0044",
 												  "X0000Y0021",
+												  "X0015Y0003",
+												  "X0015Y0002"
 };
 
-const char tag_limit_left[TAG_LIMIT_NUM][32] = { "X0000Y0004",
+const char tag_skip_error[TAG_SKIP_NUM][32]   = { "X0000Y0023",
+												  "X0000Y0022",
+												  "X0000Y0001",
+												  "X0000Y0000",
 												  "X0000Y0021",
+												  "X0000Y0002",
+												  "X0000Y0003"
 };
 
-const char tag_limit_right[TAG_LIMIT_NUM][32] = { "X0000Y0017",
-												  "X0000Y0016",
+const char tag_skip_error_obj[TAG_SKIP_OBJ_NUM][32]   = { "X0000Y0002",
+														  "X0000Y0025",
+														  "X0000Y0045",
+														  "X0000Y0021",
+														  "X0000Y0044",
+														  "X0003Y0004"
 };
 
 static bool error_limit_tag_state = false ;
@@ -187,7 +217,7 @@ char* alarmStatus(uint8_t errorType, uint16_t errorCode)
 static struct ShuttleAlarmStatus checkObstacleAxisY()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	if(getAxisShuttle() == AXIS_X || db_shuttle_run.shuttleMode == 1)  // Chế độ manual và hướng X không cần kiểm tra lỗi
+	if(getAxisShuttle() != AXIS_Y || db_shuttle_run.shuttleMode == 1)  // Chế độ manual và hướng X không cần kiểm tra lỗi
 	{
 		count_sensor_trigger[0] = 0 ;
 		count_sensor_trigger[1] = 0 ;
@@ -195,6 +225,10 @@ static struct ShuttleAlarmStatus checkObstacleAxisY()
 	}
 	if(sensor_signal.motor_parameter->TargetSpeed < 0)
 	{
+		for(int i = 0; i< TAG_SKIP_NUM; i++)
+		{
+			if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error[i])) return alarm; // bỏ qua cảm biến vật cản tại 2 đầu
+		}
 		if(sensorTrigger(&count_sensor_trigger[0], sensor_signal.di_sensor.Y1_BARRIER))
 		{
 			photoelectric_ss_state[0] = true ;
@@ -224,13 +258,20 @@ static struct ShuttleAlarmStatus checkObstacleAxisX()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
 	if(db_shuttle_run.shuttleMode == 1 ) return alarm;  // Chế độ manual và hướng Y không cần kiểm tra lỗi
-	if(getAxisShuttle() == AXIS_Y || db_shuttle_run.shuttleMode == 1)
+	for (int i = 0; i < TAG_SKIP_OBJ_NUM; i++) {
+			if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error_obj[i]))
+			{
+				photoelectric_ss_state[1] = false;
+				return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
+			}
+	}
+	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1)
 	{
 		count_sensor_trigger[2] = 0 ;
 		count_sensor_trigger[3] = 0 ;
 		return alarm;  // Hướng Y không kiểm tra
 	}
-	if(sensor_signal.motor_parameter->TargetSpeed < 0)
+	if(sensor_signal.motor_parameter->TargetSpeed < 0 )
 	{
 		if(sensorTrigger(&count_sensor_trigger[2], sensor_signal.di_sensor.X2_BARRIER))
 		{
@@ -258,24 +299,32 @@ static struct ShuttleAlarmStatus checkObstacleAxisX()
 static struct ShuttleAlarmStatus checkObjectAxisX()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	if(getAxisShuttle() == AXIS_Y || db_shuttle_run.shuttleMode == 1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK1)
+	for (int i = 0; i < TAG_SKIP_OBJ_NUM; i++) {
+		if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error_obj[i]))
+		{
+			photoelectric_ss_state[2] = false;
+			return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
+		}
+
+	}
+	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK2)
 	{
 		count_sensor_trigger[4] = 0 ;
 		count_sensor_trigger[5] = 0 ;
 		return alarm ;  // hướng Y không kiểm tra
 	}
 
-	if(sensor_signal.motor_parameter->TargetSpeed < 0)
-	{
-		if(sensorTrigger(&count_sensor_trigger[4], sensor_signal.di_sensor.X2_PACKAGE))
-		{
-			photoelectric_ss_state[2] = true ;
-		}
-	}else if(sensor_signal.motor_parameter->TargetSpeed > 0)
-	{
-		if(sensorTrigger(&count_sensor_trigger[5], sensor_signal.di_sensor.X1_PACKAGE))
-		{
-			photoelectric_ss_state[2] = true ;
+	if ((bool) sensor_signal.di_sensor.UP_LIMIT_PK1 || (bool) sensor_signal.di_sensor.UP_LIMIT_PK2) {
+		if (sensor_signal.motor_parameter->TargetSpeed < 0) {
+			if (sensorTrigger(&count_sensor_trigger[4],
+					sensor_signal.di_sensor.X2_PACKAGE)) {
+				photoelectric_ss_state[2] = true;
+			}
+		} else if (sensor_signal.motor_parameter->TargetSpeed > 0) {
+			if (sensorTrigger(&count_sensor_trigger[5],
+					sensor_signal.di_sensor.X1_PACKAGE)) {
+				photoelectric_ss_state[2] = true;
+			}
 		}
 	}
 	if(photoelectric_ss_state[2])
@@ -329,6 +378,7 @@ static struct ShuttleErrorStatus checkMotorError()
 	if(sensor_signal.motor_error_state == 1)
 	{
 		error.ErrorCode  = 1 ;
+		HAL_GPIO_WritePin(outputGpio.qStop.Port, outputGpio.qStop.gpioPin, GPIO_PIN_SET);
 	}else
 	{
 		error.ErrorCode  = sensor_signal.motor_parameter->Error_code  ;
@@ -420,7 +470,7 @@ static struct ShuttleErrorStatus checkOverDistanceQr(int *p) {
 	if(isQrChanged(sensor_signal.qr_sensor->Tag)) { *p = 0 ; delta_p = 0 ;  return error ;  } // Thay đổi QR cập nhật lại xung
 	if(axis == AXIS_X)
 	{
-		if(abs(delta_p) > distanceToPulses(DISTANCE_QR_X + 0.1))
+		if(abs(delta_p) > distanceToPulses(DISTANCE_QR_X + 0.15))
 		{
 			error.errorState = true ;
 			error.errortype  = 1 ;
@@ -495,6 +545,7 @@ static void safetyTask(void *argument)
 			{
 				emg_state = false ;
 				motorErrorReset();
+				HAL_GPIO_WritePin(outputGpio.qStop.Port, outputGpio.qStop.gpioPin, GPIO_PIN_RESET);
 			}
 			if(shuttle_error_table[4].errorState) pulse_safety = 0 ; // reset xung encoder
 			app_data.resetErrors = 0 ;

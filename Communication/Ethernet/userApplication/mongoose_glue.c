@@ -20,7 +20,7 @@ struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,15) ,//MG_U32(10,14
 									 .s_pub_info = "shuttle/information",
 									 .s_pub_report = "shuttle/report" ,
 									 .s_pub_complete = "shuttle/completeMission" ,
-									 .no = "002"  };
+									 .no = "003"  };
 uint8_t *tcpConnectState;
 osMutexId_t mqttMutex;
 

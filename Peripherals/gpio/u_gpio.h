@@ -75,7 +75,7 @@ typedef struct {
 	GPIO_UserHandle valveL1 ;
 	GPIO_UserHandle valveL2 ;
 	GPIO_UserHandle valveL3 ;
-	GPIO_UserHandle brake ;
+	GPIO_UserHandle qStop;
 }DoHandle;
 extern DoHandle outputGpio ;
 void DigitalSensorRead(SENSOR_STATUS *sensor);

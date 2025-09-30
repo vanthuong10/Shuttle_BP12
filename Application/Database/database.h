@@ -15,9 +15,9 @@ extern "C" {
 #include "stdint.h"
 #include "sensorSignal.h"
 
-#define SHUTTLE_ID "002"
-#define TOPIC_HANDLE  "shuttle/handle/002"
-#define TOPIC_RUN     "shuttle/run/002"
+#define SHUTTLE_ID "003"
+#define TOPIC_HANDLE  "shuttle/handle/003"
+#define TOPIC_RUN     "shuttle/run/003"
 #define STEP_MAX 20
 
 typedef enum {

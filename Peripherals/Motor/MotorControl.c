@@ -314,14 +314,14 @@ void motorControl( bool en, bool error, uint8_t dir, double speed )
 	{
 		Kincoparam[0].TargetSpeed = 0 ;
 		SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
-		HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
 		isStop = true ;
 	} else if(en && !error)
 	{
 		if(isStop)
 		{
 			SetControlWord(ControlWord_EN, MotorID[0]); // enable motor
-			HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_SET);
 			isStop = false;
 		}
 
