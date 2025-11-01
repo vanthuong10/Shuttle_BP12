@@ -85,8 +85,8 @@ all: main-build
 main-build: ShuttleProgram_0.1.1.elf secondary-outputs
 
 # Tool invocations
-ShuttleProgram_0.1.1.elf ShuttleProgram_0.1.1.map: $(OBJS) $(USER_OBJS) C:\Users\THUONG\ NGUYEN\Desktop\Shuttle\newCode\ShuttleV1.1\STM32H743XIHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ShuttleProgram_0.1.1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\THUONG NGUYEN\Desktop\Shuttle\newCode\ShuttleV1.1\STM32H743XIHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ShuttleProgram_0.1.1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+ShuttleProgram_0.1.1.elf ShuttleProgram_0.1.1.map: $(OBJS) $(USER_OBJS) C:\Users\THUONG\ NGUYEN\Desktop\Shuttle\Cam_With\ redBoard\ShuttleV1.1\STM32H743XIHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ShuttleProgram_0.1.1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\THUONG NGUYEN\Desktop\Shuttle\Cam_With redBoard\ShuttleV1.1\STM32H743XIHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ShuttleProgram_0.1.1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

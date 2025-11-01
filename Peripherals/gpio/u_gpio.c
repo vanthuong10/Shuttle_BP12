@@ -10,52 +10,62 @@
 *
 *            Edit Port and gpioPin parameters according to hardware connection
 */
-DoHandle outputGpio = { .resetDriver  = {.Port = GPIOF , .gpioPin = GPIO_PIN_5  },
-						.fan		  = {.Port = GPIOF , .gpioPin = GPIO_PIN_3  },
-						.buzzer 	  = {.Port = GPIOI , .gpioPin = GPIO_PIN_11 },
-						.charger      = {.Port = GPIOI , .gpioPin = GPIO_PIN_10 },
-						.pump		  = {.Port = GPIOF , .gpioPin = GPIO_PIN_14 },
-						.valveL1	  = {.Port = GPIOI , .gpioPin = GPIO_PIN_8  },
-						.valveL2	  = {.Port = GPIOG , .gpioPin = GPIO_PIN_15 },
-						.valveL3	  = {.Port = GPIOK , .gpioPin = GPIO_PIN_4  },
-						.qStop        = {.Port = GPIOB , .gpioPin = GPIO_PIN_8  }};
+DoHandle outputGpio = {
+    .resetDriver = { .Port = GPIOF, .gpioPin = GPIO_PIN_5  },  // Y0  PF5  – Reset driver
+    .fan         = { .Port = GPIOF, .gpioPin = GPIO_PIN_3  },  // Y1  PF3  – Quạt làm mát
+    .buzzer      = { .Port = GPIOI, .gpioPin = GPIO_PIN_11 },  // Y2  PI11 – Còi (buzzer)
+    .charger     = { .Port = GPIOI, .gpioPin = GPIO_PIN_10 },  // Y3  PI10 – Sạc/charger
+    .pump        = { .Port = GPIOF, .gpioPin = GPIO_PIN_14 },  // Y31 PF14 – Bơm
+    .valveL1     = { .Port = GPIOC, .gpioPin = GPIO_PIN_13 },  // Y4  PC13 – Van L1
+    .valveL2     = { .Port = GPIOI, .gpioPin = GPIO_PIN_8  },  // Y5  PI8  – Van L2
+    .valveL3     = { .Port = GPIOG, .gpioPin = GPIO_PIN_15 },  // Y6  PG15 – Van L3
+    .qStop       = { .Port = GPIOK, .gpioPin = GPIO_PIN_4  },  // Y7  PK4  – Ngắt khẩn (Q-Stop)
+};
 
 
 /* @brief     Configure input signal pins
 *
 *            Edit Port and gpioPin parameters according to hardware connection
 */
-GPIO_UserHandle BarrierSensorY1   	= {.Port =  GPIOH , .gpioPin = GPIO_PIN_5};
-GPIO_UserHandle BarrierSensorY2   	= {.Port =  GPIOA , .gpioPin = GPIO_PIN_0};
-GPIO_UserHandle PackageSensorX2   	= {.Port =  GPIOJ , .gpioPin = GPIO_PIN_4};
-GPIO_UserHandle BarrierSensorX2   	= {.Port =  GPIOG , .gpioPin = GPIO_PIN_1};
-GPIO_UserHandle PackageSensorX1   	= {.Port =  GPIOB , .gpioPin = GPIO_PIN_0};
-GPIO_UserHandle BarrierSensorX1   	= {.Port =  GPIOJ , .gpioPin = GPIO_PIN_3};
-GPIO_UserHandle PalletSensor1    	= {.Port =  GPIOH , .gpioPin = GPIO_PIN_3};
-GPIO_UserHandle PalletSensor2    	= {.Port =  GPIOH , .gpioPin = GPIO_PIN_2};
-GPIO_UserHandle InRailFront   		= {.Port =  GPIOF , .gpioPin = GPIO_PIN_4};
-GPIO_UserHandle InRailRight   		= {.Port =  GPIOC , .gpioPin = GPIO_PIN_2};
-GPIO_UserHandle InRailBehind    	= {.Port =  GPIOC , .gpioPin = GPIO_PIN_3};
-GPIO_UserHandle InRailLeft	    	= {.Port =  GPIOJ , .gpioPin = GPIO_PIN_0};
-GPIO_UserHandle UpWheelSwitch2  	= {.Port =  GPIOB , .gpioPin = GPIO_PIN_10};
-GPIO_UserHandle DownWheelSwitch2 	= {.Port =  GPIOB , .gpioPin = GPIO_PIN_11};
-GPIO_UserHandle UpWheelSwitch1    	= {.Port =  GPIOH , .gpioPin = GPIO_PIN_9};
-GPIO_UserHandle DownWheelSwitch1  	= {.Port =  GPIOD , .gpioPin = GPIO_PIN_11};
-GPIO_UserHandle UpPalletSwitch2     = {.Port =  GPIOG , .gpioPin = GPIO_PIN_0};
-GPIO_UserHandle DownPalletSwitch2   = {.Port =  GPIOF , .gpioPin = GPIO_PIN_11};
-GPIO_UserHandle UpPalletSwitch1     = {.Port =  GPIOJ , .gpioPin = GPIO_PIN_2};
-GPIO_UserHandle DownPalletSwitch1   = {.Port =  GPIOB , .gpioPin = GPIO_PIN_1};
-GPIO_UserHandle RfUpPalletSwitch 	= {.Port =  GPIOJ , .gpioPin = GPIO_PIN_6};
-GPIO_UserHandle RfDownPalletSwitch  = {.Port =  GPIOH , .gpioPin = GPIO_PIN_12};
-GPIO_UserHandle RfUpWheelSwitch 	= {.Port =  GPIOE , .gpioPin = GPIO_PIN_15};
-GPIO_UserHandle RfDownWheelSwitch   = {.Port =  GPIOH , .gpioPin = GPIO_PIN_6};
-GPIO_UserHandle RfForwardSwitch  	= {.Port =  GPIOJ , .gpioPin = GPIO_PIN_5};
-GPIO_UserHandle RfReverseSwitch  	= {.Port =  GPIOE , .gpioPin = GPIO_PIN_12};
-GPIO_UserHandle RfResetError        = {.Port =  GPIOD , .gpioPin = GPIO_PIN_15};
-GPIO_UserHandle OverTemmpature      = {.Port =  GPIOK , .gpioPin = GPIO_PIN_5};
-GPIO_UserHandle OpenBrake   		= {.Port =  GPIOG , .gpioPin = GPIO_PIN_10};
-GPIO_UserHandle EmgSwitch        	= {.Port =  GPIOB , .gpioPin = GPIO_PIN_2};
-GPIO_UserHandle SwitchSelectMode    = {.Port =  GPIOJ , .gpioPin = GPIO_PIN_1};
+
+GPIO_UserHandle PalletSensor1       = { .Port = GPIOH, .gpioPin = GPIO_PIN_5  }; // X0  PH5  – Cảm biến pallet 1
+GPIO_UserHandle PackageSensorX1     = { .Port = GPIOA, .gpioPin = GPIO_PIN_0  }; // X1  PA0  – Cảm biến kiện X1
+GPIO_UserHandle BarrierSensorX1     = { .Port = GPIOB, .gpioPin = GPIO_PIN_0  }; // X2  PB0  – Rào cản X1
+// X3 PJ3  – bỏ trống
+GPIO_UserHandle BarrierSensorY1     = { .Port = GPIOJ, .gpioPin = GPIO_PIN_4  }; // X4  PJ4  – Rào cản Y1
+GPIO_UserHandle UpPalletSwitch1     = { .Port = GPIOG, .gpioPin = GPIO_PIN_1  }; // X5  PG1  – Hành trình pallet 1 trên
+GPIO_UserHandle DownPalletSwitch1   = { .Port = GPIOH, .gpioPin = GPIO_PIN_3  }; // X6  PH3  – Hành trình pallet 1 dưới
+// X7 PH2  – bỏ trống
+GPIO_UserHandle UpWheelSwitch2      = { .Port = GPIOF, .gpioPin = GPIO_PIN_4  }; // X8  PF4  – Hành trình bánh 2 trên
+GPIO_UserHandle DownWheelSwitch2    = { .Port = GPIOC, .gpioPin = GPIO_PIN_2  }; // X9  PC2  – Hành trình bánh 2 dưới
+// X10 PC3 – bỏ trống
+GPIO_UserHandle UpWheelSwitch1      = { .Port = GPIOJ, .gpioPin = GPIO_PIN_0  }; // X11 PJ0  – Hành trình bánh 1 trên
+GPIO_UserHandle DownWheelSwitch1    = { .Port = GPIOG, .gpioPin = GPIO_PIN_0  }; // X12 PG0  – Hành trình bánh 1 dưới
+GPIO_UserHandle PalletSensor2       = { .Port = GPIOF, .gpioPin = GPIO_PIN_11 }; // X13 PF11 – Cảm biến pallet 2
+GPIO_UserHandle PackageSensorX2     = { .Port = GPIOJ, .gpioPin = GPIO_PIN_2  }; // X14 PJ2  – Cảm biến kiện X2
+GPIO_UserHandle BarrierSensorX2     = { .Port = GPIOB, .gpioPin = GPIO_PIN_1  }; // X15 PB1 – Rào cản X2
+// X16 PI15 – bỏ trống
+GPIO_UserHandle BarrierSensorY2     = { .Port = GPIOH, .gpioPin = GPIO_PIN_4  }; // X17 PH4  – Rào cản Y2
+GPIO_UserHandle UpPalletSwitch2     = { .Port = GPIOJ, .gpioPin = GPIO_PIN_6  }; // X18 PJ6  – Hành trình pallet 2 trên
+GPIO_UserHandle DownPalletSwitch2   = { .Port = GPIOD, .gpioPin = GPIO_PIN_15 }; // X19 PD15 – Hành trình pallet 2 dưới
+GPIO_UserHandle RfResetError        = { .Port = GPIOH, .gpioPin = GPIO_PIN_12 }; // X20 PH12 – RF reset lỗi
+GPIO_UserHandle EmgSwitch           = { .Port = GPIOJ, .gpioPin = GPIO_PIN_1  }; // X28 PJ5  – Nút dừng khẩn
+GPIO_UserHandle RfForwardSwitch     = { .Port = GPIOE, .gpioPin = GPIO_PIN_15 }; // X22 PE15 – RF tiến
+GPIO_UserHandle RfReverseSwitch     = { .Port = GPIOE, .gpioPin = GPIO_PIN_12 }; // X23 PE12 – RF lùi
+GPIO_UserHandle RfUpPalletSwitch    = { .Port = GPIOH, .gpioPin = GPIO_PIN_6  }; // X24 PH6  – RF nâng pallet
+GPIO_UserHandle RfDownPalletSwitch  = { .Port = GPIOK, .gpioPin = GPIO_PIN_5  }; // X25 PK5  – RF hạ pallet
+GPIO_UserHandle RfUpWheelSwitch     = { .Port = GPIOG, .gpioPin = GPIO_PIN_10 }; // X26 PG10 – RF nâng bánh
+GPIO_UserHandle RfDownWheelSwitch   = { .Port = GPIOB, .gpioPin = GPIO_PIN_2  }; // X27 PB2  – RF hạ bánh
+GPIO_UserHandle OpenBrake           = { .Port = GPIOJ, .gpioPin = GPIO_PIN_1  }; // X28 PJ1  – Mở phanh
+// X29 PF12 – chưa gán
+GPIO_UserHandle OverTemmpature      = { .Port = GPIOF, .gpioPin = GPIO_PIN_13 }; // X30 PF13 – Báo quá nhiệt
+GPIO_UserHandle SwitchSelectMode    = { .Port = GPIOB, .gpioPin = GPIO_PIN_10 }; // X31 PB10 – Chọn chế độ
+
+// InRail chuyển sang X32..X35
+GPIO_UserHandle InRailFront         = { .Port = GPIOB, .gpioPin = GPIO_PIN_11 }; // X32 PB11 – Ray trước
+GPIO_UserHandle InRailRight         = { .Port = GPIOH, .gpioPin = GPIO_PIN_9  }; // X33 PH9  – Ray phải
+GPIO_UserHandle InRailBehind        = { .Port = GPIOD, .gpioPin = GPIO_PIN_11 }; // X34 PD11 – Ray sau
+GPIO_UserHandle InRailLeft          = { .Port = GPIOJ, .gpioPin = GPIO_PIN_7  }; // X35 PJ7  – Ray trái
 
 
 static SENSOR_STATUS inputSignal ;

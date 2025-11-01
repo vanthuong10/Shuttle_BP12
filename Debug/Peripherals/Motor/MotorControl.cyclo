@@ -16,8 +16,8 @@
 ../Peripherals/Motor/MotorControl.c:267:6:readParameter	4
 ../Peripherals/Motor/MotorControl.c:310:6:motorControl	11
 ../Peripherals/Motor/MotorControl.c:342:6:motorErrorReset	1
-../Peripherals/Motor/MotorControl.c:350:8:rpmToSpeed	1
-../Peripherals/Motor/MotorControl.c:360:5:speedToRpm	1
-../Peripherals/Motor/MotorControl.c:370:5:speedToRps	1
-../Peripherals/Motor/MotorControl.c:375:5:distanceToPulses	1
-../Peripherals/Motor/MotorControl.c:388:8:calculateAcceleration	1
+../Peripherals/Motor/MotorControl.c:352:8:rpmToSpeed	1
+../Peripherals/Motor/MotorControl.c:362:5:speedToRpm	1
+../Peripherals/Motor/MotorControl.c:372:5:speedToRps	1
+../Peripherals/Motor/MotorControl.c:377:5:distanceToPulses	1
+../Peripherals/Motor/MotorControl.c:390:8:calculateAcceleration	1

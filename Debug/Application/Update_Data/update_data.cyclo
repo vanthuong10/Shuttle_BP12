@@ -1,5 +1,6 @@
-../Application/Update_Data/update_data.c:20:13:getInfoBatery	1
-../Application/Update_Data/update_data.c:32:13:getInfoQrReader	1
-../Application/Update_Data/update_data.c:38:6:ws_transmit_timer	4
-../Application/Update_Data/update_data.c:111:13:inforUpdatetask	3
-../Application/Update_Data/update_data.c:163:6:dataUpdateTaskInit	1
+../Application/Update_Data/update_data.c:20:9:getPalletLiftingStatus	3
+../Application/Update_Data/update_data.c:29:13:getInfoBatery	1
+../Application/Update_Data/update_data.c:41:13:getInfoQrReader	1
+../Application/Update_Data/update_data.c:47:6:ws_transmit_timer	4
+../Application/Update_Data/update_data.c:120:13:inforUpdatetask	3
+../Application/Update_Data/update_data.c:174:6:dataUpdateTaskInit	1

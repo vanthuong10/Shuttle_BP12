@@ -343,8 +343,10 @@ void motorErrorReset()
 {
 	SetControlWord(ControlWord_DIS, MotorID[0]);
 	SDOResetErrors(0x01, MotorID[0]);
-	SetControlWord(ControlWord_EN, MotorID[0]);
 	SDOResetErrors(0x0, MotorID[0]);
+	SDOResetErrors(0x01, MotorID[0]);
+	SDOResetErrors(0x0, MotorID[0]);
+	SetControlWord(ControlWord_EN, MotorID[0]);
 }
 
 double rpmToSpeed (double rpm)

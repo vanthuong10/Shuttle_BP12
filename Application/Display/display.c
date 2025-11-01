@@ -43,16 +43,16 @@ static void displaytask(void *argument)
 				mb_setLed(0, 200, 200, 50, 250);  //Blue
 				break;
 			case SHUTTLE_IS_SLOW:
-				mb_setLed(255, 247, 3, 100, 250);
+				mb_setLed(255, 3, 247, 100, 250);
 				break;
 			case SHUTTLE_IS_RUNNING:
-				mb_setLed(0, 254, 0, 500, 250);  //Green
+				mb_setLed(0, 0, 254, 500, 250);  //Green
 				break;
 			case SHUTTLE_IS_WAITING_CMD:
 				mb_setLed(242, 135, 5, 500, 250);
 				break;
 			default:
-				mb_setLed(0, 200, 0, 100, 250);
+				mb_setLed(0, 0, 200, 100, 250);
 				break;
 		}
 		if(showHomePage)

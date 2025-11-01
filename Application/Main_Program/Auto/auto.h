@@ -12,7 +12,7 @@ extern "C" {
 #define SPEED_LEVEL_0 0    // m/s
 #define SPEED_LEVEL_1 0.05
 #define SPEED_LEVEL_2 0.4
-#define SPEED_LEVEL_3 0.6
+#define SPEED_LEVEL_3 0.35
 #define SPEED_LEVEL_4 0.6
 
 void autoTaskInit();

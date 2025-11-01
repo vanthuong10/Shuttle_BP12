@@ -159,12 +159,12 @@ static bool motorStarting()
 {
 	uint16_t timeout = 0;
 	sensor_signal.motor_parameter = &Kincoparam[0] ;
-	while (!Kincoparam[0].flagMotorConnected && timeout < 3000) // Đợi drive khởi động
+	while (!Kincoparam[0].flagMotorConnected && timeout < 4000) // Đợi drive khởi động
 	{
 		timeout++;
 		osDelay(5);
 	}
-	if (timeout >= 3000) {
+	if (timeout >= 4000) {
 		// Báo lỗi nếu sau 5s động cơ chưa khởi động
 		return false ;
 	}

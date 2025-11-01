@@ -16,29 +16,31 @@
 #define TAG_SKIP_NUM 7
 #define TAG_SKIP_OBJ_NUM 6
 #define DISTANCE_ERROR_SET 60
-const char tag_limit_front[TAG_LIMIT_NUM][32] = { "X0000Y0045",
-												  "X0004Y0001",
+#define LOW_POWER_SET 25
+
+const char tag_limit_front[TAG_LIMIT_NUM][32] = { "X0000Y0028",
+												  "X0000Y0035",
 };
 
-const char tag_limit_back[TAG_LIMIT_NUM][32] = { "X0000Y0000",
-												 "X0000Y0023",
+const char tag_limit_back[TAG_LIMIT_NUM][32] = { "X0000Y0059",
+												 "X0000Y0052",
 												 "X0015Y0001",
 												 "X0015Y0002"
 
 };
 
-const char tag_limit_left[TAG_LIMIT_NUM][32] = { "X0000Y0045",
-												 "X0000Y0025",
-												 "X0000Y0002",
-												 "X0004Y0002",
+const char tag_limit_left[TAG_LIMIT_NUM][32] = { "X0000Y0044",
+												 "X0000Y0059",
+												 "X0000Y0043",
+												 "X0000Y0028",
 												 "X0015Y0001",
 												 "X0015Y0000"
 };
 
-const char tag_limit_right[TAG_LIMIT_NUM][32] = { "X0004Y0001",
-												  "X0003Y0004",
-												  "X0000Y0044",
-												  "X0000Y0021",
+const char tag_limit_right[TAG_LIMIT_NUM][32] = { "X0000Y0035",
+												  "X0000Y0036",
+												  "X0000Y0051",
+												  "X0000Y0052",
 												  "X0015Y0003",
 												  "X0015Y0002"
 };
@@ -217,7 +219,7 @@ char* alarmStatus(uint8_t errorType, uint16_t errorCode)
 static struct ShuttleAlarmStatus checkObstacleAxisY()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	if(getAxisShuttle() != AXIS_Y || db_shuttle_run.shuttleMode == 1)  // Chế độ manual và hướng X không cần kiểm tra lỗi
+	if(getAxisShuttle() != AXIS_Y || db_shuttle_run.shuttleMode == 1 || !db_shuttle_run.motor_is_run)  // Chế độ manual và hướng X không cần kiểm tra lỗi
 	{
 		count_sensor_trigger[0] = 0 ;
 		count_sensor_trigger[1] = 0 ;
@@ -265,11 +267,11 @@ static struct ShuttleAlarmStatus checkObstacleAxisX()
 				return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
 			}
 	}
-	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1)
+	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1 || !db_shuttle_run.motor_is_run)
 	{
 		count_sensor_trigger[2] = 0 ;
 		count_sensor_trigger[3] = 0 ;
-		return alarm;  // Hướng Y không kiểm tra
+		return alarm;  // Hướng Y, motor dừng không kiểm tra
 	}
 	if(sensor_signal.motor_parameter->TargetSpeed < 0 )
 	{
@@ -307,7 +309,8 @@ static struct ShuttleAlarmStatus checkObjectAxisX()
 		}
 
 	}
-	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK2)
+	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK1
+			|| (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK2 || !db_shuttle_run.motor_is_run)
 	{
 		count_sensor_trigger[4] = 0 ;
 		count_sensor_trigger[5] = 0 ;
@@ -355,7 +358,7 @@ static struct ShuttleAlarmStatus checkPalletPositionAlarm()
 static struct ShuttleAlarmStatus checkEmgButton()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	if((bool)sensor_signal.di_sensor.EMG_BUTTON || app_data.emg == 1)
+	if((bool)sensor_signal.di_sensor.EMG_BUTTON || app_data.emg == 1 || emg_state)
 	{
 		alarm.alarmState = true;
 		alarm.alarmtype = 0;
@@ -365,6 +368,25 @@ static struct ShuttleAlarmStatus checkEmgButton()
 	}
 	return alarm ;
 }
+
+/**
+ * @brief    Kiểm tra dung lượng pin shuttle.
+ * @return:  trạng thái cảnh báo nếu có
+ */
+static struct ShuttleAlarmStatus checkLowPower()
+{
+	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
+	if(sensor_signal.battery.SOC <= LOW_POWER_SET)
+	{
+		alarm.alarmState = true;
+		alarm.alarmtype = 3;
+		alarm.alarmCode = 0;
+	}
+	return alarm ;
+}
+
+
+
 /**
  * @brief   Kiểm tra lỗi động cơ .
  * @return:  trạng thai lỗi nếu có
@@ -504,6 +526,7 @@ static char* getShuttleErrorStatus()
 	shuttle_alarm_table[2] = checkObjectAxisX();
 	shuttle_alarm_table[3] = checkObstacleAxisX();
 	shuttle_alarm_table[4] = checkObstacleAxisY();
+	shuttle_alarm_table[5] = checkLowPower();
 
 	for(int i=0; i<=7; i++)
 	{
@@ -519,9 +542,15 @@ static char* getShuttleErrorStatus()
 	{
 		if(shuttle_alarm_table[y].alarmState)
 		{
-			shuttle_is_error = true ;
+			if(shuttle_alarm_table[5].alarmState)
+			{
+				// no acction
+			}else
+			{
+				shuttle_is_error = true ;
+				shuttleSetStatus(SHUTTLE_IS_ERROR);
+			}
 			ControlBuzzer(GPIO_PIN_SET); // bật còi báo
-			shuttleSetStatus(SHUTTLE_IS_ERROR);
 			return alarmStatus(shuttle_alarm_table[y].alarmtype, shuttle_alarm_table[y].alarmCode);
 		}
 	}
@@ -558,7 +587,7 @@ static void safetyTask(void *argument)
 			overLoadState = false ;
 			error_limit_tag_state = false;
 		}
-		osDelay(20/portTICK_PERIOD_MS);
+		osDelay(10/portTICK_PERIOD_MS);
 	}
 
 }

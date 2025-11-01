@@ -15,9 +15,9 @@ extern "C" {
 #include "stdint.h"
 #include "sensorSignal.h"
 
-#define SHUTTLE_ID "003"
-#define TOPIC_HANDLE  "shuttle/handle/003"
-#define TOPIC_RUN     "shuttle/run/003"
+#define SHUTTLE_ID "002"
+#define TOPIC_HANDLE  "shuttle/handle/002"
+#define TOPIC_RUN     "shuttle/run/002"
 #define STEP_MAX 20
 
 typedef enum {
@@ -91,6 +91,7 @@ struct DataRun {
 	uint16_t statusReg;
 	uint8_t cmdComplete;       // status mission
 	int missionComplete;   // total mission
+	bool motor_is_run;
 };
 
 extern struct DataRun db_shuttle_run;
@@ -112,6 +113,7 @@ struct DataInfo {
 	char *no;
 	uint8_t chargeDischargeStatus;
 	uint8_t currentStep;
+	uint8_t palletLiftingstatus ;
 	uint32_t ip32U;
 };
 

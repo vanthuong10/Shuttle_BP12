@@ -24,9 +24,16 @@ const osThreadAttr_t ManualTask_attributes = {
 };
 int test_rps;
 double test_speed;
+static bool acc_low = false ;
 void Manualtask(void *argument)
 {
-	app_data.TargetSpeed = 0.2 ;  // vận tốc mặc định 0.2 m/s
+	app_data.TargetSpeed = 0.3 ;  // vận tốc mặc định 0.3 m/s
+//	char qr_pre[32]; // mảng lưu qr cũ
+//	strcpy(qr_pre, sensor_signal.qr_sensor->Tag); // Sao chép chuỗi
+//	bool qr_is_change = false ;
+//	static int delta_p = 0 ;
+//	static int pluse = 0 ;
+//	static bool acc_low = false ;
 	for(;;)
 	{
 		db_shuttle_run.packageStatus = getPackageState();
@@ -77,6 +84,35 @@ void Manualtask(void *argument)
 		{
 			m_error = true ;
 		}
+//		// So sánh chuỗi hiện tại với trạng thái trước đó
+//		if (strcmp(sensor_signal.qr_sensor->Tag, qr_pre) != 0) {
+//			strcpy(qr_pre, sensor_signal.qr_sensor->Tag); // Cập nhật trạng thái trước đó
+//			qr_is_change = true; // Có thay đổi
+//		}
+//		if (qr_is_change) {
+//			pluse = 0;
+//			delta_p = 0;
+//			qr_is_change = false;
+//		} // Thay đổi QR cập nhật lại xung
+//		if (pluse == 0) {
+//			pluse = sensor_signal.motor_parameter->PosActual;
+//		}  // cập nhật xung ban đầu
+//		delta_p = sensor_signal.motor_parameter->PosActual - pluse;
+//		if (abs(delta_p) <= distanceToPulses(0.2)) {
+//			if (!acc_low) {
+//				SDOProfileAcc(0.01, MotorID[0]); // thay đổi gia tốc chậm
+//				acc_low = true;
+//			}
+//		} else {
+//			if (acc_low) {
+//				SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc chậm
+//				acc_low = false;
+//			}
+//		}
+		if (!acc_low) {
+			SDOProfileAcc(0.01, MotorID[0]); // thay đổi gia tốc chậm
+			acc_low = true;
+		}
 		motorControl(true, m_error, dir, target_speed);
 		uint64_t now = mg_millis();
 		if (u_timer_expired(&manual_timer[0], 200, now)) {
@@ -88,7 +124,7 @@ void Manualtask(void *argument)
 void resetManualMode()
 {
 	app_data.buttonState = 0 ;
-	app_data.TargetSpeed = 0.2 ;  // vận tốc mặc định 0.2 m/s
+	app_data.TargetSpeed = 0.3 ;  // vận tốc mặc định 0.3 m/s
 	manual_timer[0] = 0 ;
 }
 void manualTaskInit()
@@ -102,6 +138,7 @@ void manualTaskInit()
 void manualTaskSupend()
 {
 	if (!manualTask_suspended_state) {
+		acc_low = false;
 		osThreadSuspend(ManualTaskHandle);
 		manualTask_suspended_state = true ;
 		MG_DEBUG(("MANUAL TASK SUPEND \n"));

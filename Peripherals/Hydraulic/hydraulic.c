@@ -13,10 +13,13 @@
 #include "sensorSignal.h"
 
 static osSemaphoreId_t pumpSemaphoreHandle; // Semaphore cho bơm
-static const uint64_t TIMER_LIMIT_HYDRAULIC = 5000 ; // 5000 ms
+static const uint64_t TIMER_LIMIT_HYDRAULIC = 6000 ; // 5000 ms
 static const uint64_t TIMER_DELAY_OFF_PUMP = 300 ; // 500 ms
+static const uint64_t TIMER_DELAY_ON_HYDRAULIC = 1000 ; // 1000 ms
 static uint64_t timer_error_hydarulic = 0 ;
 static uint64_t timer_wait_hydraulic = 0 ;
+static uint64_t timer_delay_hydraulic = 0 ;
+
 static bool hydraulic_wait = false ;
 static bool hydraulic_is_overtime = false ;
 static bool hydraulic_is_overload = false;
@@ -134,7 +137,7 @@ void hydraulicSetState(struct HydraulicTableControl state) {
 bool controlCylinder(CylinderState cmd, bool en )
 {
 	if(hydraulic_emg) en = false ;   // nếu emg không chạy bơm
-	if(detectFlagRisingEdge(en, &triger_flag[0])) { timer_error_hydarulic = 0 ; timer_wait_hydraulic = 0 ; hydraulic_wait = false ;}  // Reset lại timer mỗi lần chạy bơm
+	if(detectFlagRisingEdge(en, &triger_flag[0])) { timer_error_hydarulic = 0 ; timer_wait_hydraulic = 0 ; hydraulic_wait = false ;timer_delay_hydraulic = 0 ;}  // Reset lại timer mỗi lần chạy bơm
 	bool state = false;
 	uint64_t now = (uint64_t) ((osKernelGetTickCount() * 1000) / osKernelGetTickFreq());
 	if(!en || hydraulic_is_overload || hydraulic_is_overtime) {
@@ -150,6 +153,14 @@ bool controlCylinder(CylinderState cmd, bool en )
 			break;
 		case CYLINDER_PALLET_UP:
 			state = *lmss_pallet_up_1 == 0 || *lmss_pallet_up_2 == 0 ;
+			bool temp1 = *lmss_pallet_up_1 == 1 || *lmss_pallet_up_2 == 1 ;
+			if(temp1)
+			{
+				if(u_timer_expired(&timer_delay_hydraulic, TIMER_DELAY_ON_HYDRAULIC, now))
+				{
+					state = false ;
+				}
+			}
 			if(state)
 			{
 				hydraulicSetState(pallet_up_state);
@@ -166,6 +177,14 @@ bool controlCylinder(CylinderState cmd, bool en )
 			break;
 		case CYLINDER_PALLET_DOWN:
 			state = *lmss_pallet_down_1 == 0 || *lmss_pallet_down_2 == 0 ;
+			bool temp2 = *lmss_pallet_down_1 == 1 || *lmss_pallet_down_2 == 1 ;
+			if(temp2)
+			{
+				if(u_timer_expired(&timer_delay_hydraulic, TIMER_DELAY_ON_HYDRAULIC, now))
+				{
+					state = false ;
+				}
+			}
 			if(state)
 			{
 				hydraulicSetState(pallet_down_state);

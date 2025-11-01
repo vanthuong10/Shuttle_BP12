@@ -17,6 +17,15 @@ const osThreadAttr_t SyncTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal2,
 };
 
+uint8_t getPalletLiftingStatus()
+{
+	if(sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH || sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH )
+	{
+		return 1 ;
+	}
+	return 0 ;
+}
+
 static void getInfoBatery()
 {
 	db_shuttle_info.batteryPercentage = sensor_signal.battery.SOC;
@@ -125,6 +134,7 @@ static void inforUpdatetask(void *argument)
 			strcpy(tmp_buf,sensor_signal.qr_sensor->Tag);
 		}
 		getInfoBatery();
+		db_shuttle_info.palletLiftingstatus = getPalletLiftingStatus();
 		if(db_shuttle_run.shuttleMode == 0)  // cập nhật trạng thái chỉ khi ở chế độ Auto
 		{
 			db_shuttle_run.shuttleCurrentStatus = shuttleGetStatus();
@@ -133,7 +143,7 @@ static void inforUpdatetask(void *argument)
 			db_shuttle_run.shuttleCurrentStatus = 0 ;
 		}
 		memset(buf, 0 , sizeof(buf));
-		mg_snprintf(buf,512,"{ %m:%m, %m:%m, %m:%d, %m:%d, %m:%d, %m:%.4f, %m:%.4f, %m:%.4f, %m:%.4f, %m:%d, %m:%d, %m:%d, %m:%m, %m:%.4f, %m:%d, %m:%m, %m:%d, %m:%d, %m:%.4f, %m:%.4f}",
+		mg_snprintf(buf,512,"{ %m:%m, %m:%m, %m:%d, %m:%d, %m:%d, %m:%.4f, %m:%.4f, %m:%.4f, %m:%.4f, %m:%d, %m:%d, %m:%d, %m:%m, %m:%.4f, %m:%d, %m:%m, %m:%d, %m:%d, %m:%d, %m:%.4f, %m:%.4f}",
 					MG_ESC("no"), MG_ESC(db_shuttle_info.no),
 					MG_ESC("ip"), MG_ESC(db_shuttle_info.ip),
 					MG_ESC("shuttleMode"),db_shuttle_run.shuttleMode,
@@ -151,6 +161,7 @@ static void inforUpdatetask(void *argument)
 					MG_ESC("commandComplete"),db_shuttle_run.cmdComplete,
 					MG_ESC("qrCode"), MG_ESC(tmp_buf),
 					MG_ESC("packageStatus"), db_shuttle_run.packageStatus,
+					MG_ESC("palletLiftingStatus"), db_shuttle_info.palletLiftingstatus,
 					MG_ESC("missionCompleted"), db_shuttle_run.missionComplete,
 					MG_ESC("temperature"),db_shuttle_info.bmsTemperature,
 					MG_ESC("pressure"),sensor_signal.pressure_sensor);

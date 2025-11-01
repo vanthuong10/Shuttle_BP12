@@ -14,6 +14,8 @@
 #include "display.h"
 
 static uint64_t timer_auto;
+static bool auto_acc_nomal = false ;
+
 static bool autoTask_suspended_state = false;
 osThreadId_t AutoTaskHandle;
 const osThreadAttr_t AutoTask_attributes = {
@@ -43,9 +45,10 @@ struct AMotorHandle {
 	bool en ;
 	bool Error ;
 	bool zeroSpeed;
+	bool driection_is_zero;
 	uint8_t drirection;
 };
-static struct AMotorHandle motorHandle = {0,0,false, false, false, 0 } ;
+static struct AMotorHandle motorHandle = {0,0,false, false, false,false, 0 } ;
 struct CmdStatus
 {
 	bool complete ;  // cờ báo hoàn thành nhiệm vụ
@@ -277,7 +280,7 @@ static bool aGetPack()
 				}
 				break;
 	    }
-	if (flag_get_pack.flag1 || flag_get_pack.flag3 || motorHandle.drirection == 0) {
+	if (flag_get_pack.flag1 || flag_get_pack.flag3 || motorHandle.driection_is_zero) {
 		motorHandle.en = false;  // dừng motor
 		shuttleSetStatus(SHUTTLE_IS_LIFT_PALLET);
 		if (controlCylinder(CYLINDER_PALLET_UP, true))  // nâng pallet
@@ -287,6 +290,7 @@ static bool aGetPack()
 			controlCylinder(CYLINDER_OFF, false);     // dừng xyanh
 			motorHandle.en = true;
 			flag_get_pack.flag1 = false;
+			motorHandle.driection_is_zero = false ;
     		SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
 			return true;
 		}
@@ -341,7 +345,7 @@ static bool aPutPack()
 			break;
     }
 
-	if (flag_put_pack.flag1 || flag_put_pack.flag3 || motorHandle.drirection == 0) {
+	if (flag_put_pack.flag1 || flag_put_pack.flag3 || motorHandle.driection_is_zero) {
 		motorHandle.en = false;  // dừng motor
 		shuttleSetStatus(SHUTTLE_IS_LOWER_PALLET);
 		if (controlCylinder(CYLINDER_PALLET_DOWN, true))  // hạ pallet
@@ -352,6 +356,7 @@ static bool aPutPack()
 			motorHandle.en = true;
 			flag_put_pack.flag1 = false;
 			flag_put_pack.flag3 = false;
+			motorHandle.driection_is_zero = false ;
 			SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
 			return true;
 		}
@@ -528,6 +533,7 @@ static bool runStep(char* targetQr, int targetDir, int proceed)
     	if(targetDir == NOMAL) { // nếu hướng là 0 thì dừng
     	    	aSetSpeed(SPEED_ZERO);
     	    	flag_run_step.flag1 = true ;
+    	    	motorHandle.driection_is_zero = true ;
     	    }
     	    else
     	    {
@@ -634,16 +640,13 @@ void Autotask(void *argument)
 				aSetSpeed(SPEED_ZERO) ;		 // Vận tốc về 0
 				shuttleUnSetStatus(SHUTTLE_IS_RUNNING);
 				shuttleSetStatus(SHUTTLE_IS_WAITING_CMD);
-				if(rpmToSpeed(sensor_signal.motor_parameter->SpeedReal) <= 0.1) // chờ vận tốc về 0
-				{
-					clearMission();
-					motorHandle.en = false ;     // off động cơ
-					cmdstatus.complete = true ;  // done mission
-					cmdstatus.mission = false;   // no mission
-					server_cmd.newMission = false ; // reset flag get mission
-					aResetFlag();  // reset các cờ phục vụ chạy auto
-					aSetSpeed(SPEED_ZERO) ;		 // Vận tốc về 0
-				}
+				clearMission();
+				motorHandle.en = false;     // off động cơ
+				cmdstatus.complete = true;  // done mission
+				cmdstatus.mission = false;   // no mission
+				server_cmd.newMission = false; // reset flag get mission
+				aResetFlag();  // reset các cờ phục vụ chạy auto
+				aSetSpeed(SPEED_ZERO);		 // Vận tốc về 0
 				break;
 			case 1: /* lệnh chạy shuttle mặc định*/
 				autoModeNomal();
@@ -658,25 +661,26 @@ void Autotask(void *argument)
 		}
 		if (server_cmd.adminCmd != 0) {
 			db_shuttle_run.packageStatus = getPackageState();
-			switch (db_shuttle_run.packageStatus) {
-			case 0:
+			if(db_shuttle_run.packageStatus == 1 && (sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH || sensor_signal.di_sensor.UP_LIMIT_PK2 == HIGH))
+			{
+				aSetSpeed(SPEED_NOMAL);
+				aUnSetSpeed(SPEED_HIGH);
+			}else
+			{
 				aSetSpeed(SPEED_HIGH);
 				aUnSetSpeed(SPEED_NOMAL);
-				break;
-			case 1:
-				aSetSpeed(SPEED_NOMAL);
-				aUnSetSpeed(SPEED_HIGH);
-				break;
-			default:
-				aSetSpeed(SPEED_NOMAL);
-				aUnSetSpeed(SPEED_HIGH);
-				break;
 			}
 		}
 		aSelectSpeed();  // Set tốc độ động cơ
 		motorHandle.Error = shuttleErrorState();
 		db_shuttle_info.currentStep = cmdstatus.currentStep ;
+		if(!auto_acc_nomal)
+		{
+			SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
+			auto_acc_nomal = true ;
+		}
 		uint64_t now = mg_millis();
+		db_shuttle_run.motor_is_run  = motorHandle.en ;
 		if(u_timer_expired(&timer_auto, 40, now))
 		{
 			motorControl(motorHandle.en, motorHandle.Error, motorHandle.drirection, motorHandle.targetSpeed);
@@ -702,6 +706,7 @@ void autoTaskSupend()
 		missionComplete(0);
 		osThreadSuspend(AutoTaskHandle);
 		autoTask_suspended_state = true ;
+		auto_acc_nomal = false ;
 		MG_DEBUG(("AUTO TASK SUPEND \n"));
 	}
 }
