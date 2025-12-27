@@ -602,5 +602,5 @@ void safetyTaskInit()
 }
 bool shuttleErrorState()
 {
-	return shuttle_is_error;
+	return shuttle_is_error || emg_state ;
 }

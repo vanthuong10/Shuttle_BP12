@@ -310,12 +310,21 @@ void readParameter()
 void motorControl( bool en, bool error, uint8_t dir, double speed )
 {
 	static bool isStop =  true ;
-	if ((!en || error) && isStop == false)
+// 	if ((!en || error) && isStop == false)
+// 	{
+// 		Kincoparam[0].TargetSpeed = 0 ;
+// 		SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
+// //		HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
+// 		isStop = true ;
+	if (!en || error)
 	{
 		Kincoparam[0].TargetSpeed = 0 ;
-		SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
-//		HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
-		isStop = true ;
+		if (!isStop)
+		{
+			SetControlWord(ControlWord_DIS, MotorID[0]); // disable motor
+//			HAL_GPIO_WritePin(outputGpio.brake.Port, outputGpio.brake.gpioPin, GPIO_PIN_RESET);
+			isStop = true ;
+		}
 	} else if(en && !error)
 	{
 		if(isStop)
