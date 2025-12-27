@@ -14,6 +14,8 @@
 #include "display.h"
 
 static uint64_t timer_auto;
+static uint64_t timer_wait_getPack;
+static uint64_t timer_wait_down_whell;
 static bool auto_acc_nomal = false ;
 
 static bool autoTask_suspended_state = false;
@@ -90,7 +92,7 @@ static void aSelectSpeed()
     for (int i = SPEED_ZERO; i <= SPEED_HIGH; i++) {
         if (uReadBit(cmdstatus.speedReg, i)) {
             motorHandle.targetSpeed = speedTable[i];
-            if(i == SPEED_VERRY_LOW)
+            if(i == SPEED_VERRY_LOW || i == SPEED_LOW)
             {
             	shuttleSetStatus(SHUTTLE_IS_SLOW);
             }else
@@ -121,8 +123,7 @@ static void missionComplete(int state)
 	db_shuttle_run.cmdComplete = cmdstatus.complete;
 	char buf[64];
 	memset(buf, 0,sizeof(buf));
-	mg_snprintf(buf, 64,"{ %m:%d }",
-				MG_ESC("status"), state);
+	mg_snprintf(buf, 64,"{ %m:%d }", MG_ESC("status"), state);
 	struct mg_str json = mg_str(buf);
 	mqtt_publish(json, SELECT_COMPLETE_TOPIC);
 }
@@ -166,6 +167,7 @@ static bool changeDirection(ShuttleAxis axis)
 	 * flag3 : Change_acc
 	 * */
     aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+    aUnSetSpeed(SPEED_LOW);
     if(axis == AXIS_X)
     {
     	if(abs(qr.distanceX) <= 3)
@@ -218,15 +220,20 @@ static bool changeDirection(ShuttleAxis axis)
 	    {
 	    	motorHandle.en = false;
 	    	shuttleSetStatus(SHUTTLE_IS_LOWER_WHEEL);
+	    	uint64_t now = mg_millis();
 	    	if(controlCylinder(CYLINDER_WHEEL_DOWN, true))
 	    	{
-	    		aUnSetSpeed(SPEED_VERRY_LOW) ; // bỏ trạng thái đi chậm
-	    		controlCylinder(CYLINDER_OFF, false);     // dừng xyanh
-	    		shuttleUnSetStatus(SHUTTLE_IS_LOWER_WHEEL);
-	    		SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
-	    		motorHandle.en = true;
-	    		flag_change_dir.flag2 = false;
-	    		return true ;
+	    		if(u_timer_expired(&timer_wait_down_whell, 1000, now))
+	    		{
+		    		aUnSetSpeed(SPEED_VERRY_LOW) ; // bỏ trạng thái đi chậm
+		    		controlCylinder(CYLINDER_OFF, false);     // dừng xyanh
+		    		shuttleUnSetStatus(SHUTTLE_IS_LOWER_WHEEL);
+		    		SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
+		    		motorHandle.en = true;
+		    		flag_change_dir.flag2 = false;
+		    		timer_wait_down_whell = 0 ;
+		    		return true ;
+	    		}
 	    	}
 	    }
     }
@@ -238,6 +245,7 @@ static bool changeDirection(ShuttleAxis axis)
  */
 static FlagState flag_get_pack = {0,0,0,0} ;
 
+
 static bool aGetPack()
 {
 	/*
@@ -246,10 +254,11 @@ static bool aGetPack()
 	 * */
 
 	aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+    aUnSetSpeed(SPEED_LOW);
 	    ShuttleAxis current_axis  = getAxisShuttle() ;
 	    switch ((int)current_axis) {
 			case AXIS_X:
-				if(abs(qr.distanceY) <= 1)
+				if(abs(qr.distanceY) <= 3)
 				{
 					flag_get_pack.flag1 = true ; // nếu lệch 3 mm
 					flag_get_pack.flag2 = false ;
@@ -265,7 +274,7 @@ static bool aGetPack()
 				}
 				break ;
 			case AXIS_Y:
-				if(abs(qr.distanceX) <=1)
+				if(abs(qr.distanceX) <= 3)
 				{
 					flag_get_pack.flag3 = true ; // nếu lệch 3mm
 					flag_get_pack.flag4 = false ;
@@ -283,16 +292,21 @@ static bool aGetPack()
 	if (flag_get_pack.flag1 || flag_get_pack.flag3 || motorHandle.driection_is_zero) {
 		motorHandle.en = false;  // dừng motor
 		shuttleSetStatus(SHUTTLE_IS_LIFT_PALLET);
-		if (controlCylinder(CYLINDER_PALLET_UP, true))  // nâng pallet
+		uint64_t now = mg_millis();
+		if(controlCylinder(CYLINDER_PALLET_UP, true))
 		{
-			aUnSetSpeed(SPEED_VERRY_LOW); // bỏ trạng thái đi chậm
-			shuttleUnSetStatus(SHUTTLE_IS_LIFT_PALLET);
-			controlCylinder(CYLINDER_OFF, false);     // dừng xyanh
-			motorHandle.en = true;
-			flag_get_pack.flag1 = false;
-			motorHandle.driection_is_zero = false ;
-    		SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
-			return true;
+			if(u_timer_expired(&timer_wait_getPack, 1000, now))
+			{
+				aUnSetSpeed(SPEED_VERRY_LOW); // bỏ trạng thái đi chậm
+				shuttleUnSetStatus(SHUTTLE_IS_LIFT_PALLET);
+				controlCylinder(CYLINDER_OFF, false);     // dừng xyanh
+				motorHandle.en = true;
+				flag_get_pack.flag1 = false;
+				motorHandle.driection_is_zero = false ;
+	    		SDOProfileAcc(SHUTTLE_ACC, MotorID[0]); // thay đổi gia tốc mặc định
+	    		timer_wait_getPack = 0 ;
+				return true;
+			}
 		}
 	}
 	return false ;
@@ -310,10 +324,11 @@ static bool aPutPack()
 	 * */
 
     aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+    aUnSetSpeed(SPEED_LOW);
     ShuttleAxis current_axis  = getAxisShuttle() ;
     switch ((int)current_axis) {
 		case AXIS_X:
-			if(abs(qr.distanceY) <= 1)
+			if(abs(qr.distanceY) <= 3)
 			{
 				flag_put_pack.flag1 = true ; // nếu lệch 3 mm
 				flag_put_pack.flag2 = false ;
@@ -329,7 +344,7 @@ static bool aPutPack()
 			}
 			break ;
 		case AXIS_Y:
-			if(abs(qr.distanceX) <=1)
+			if(abs(qr.distanceX) <= 3)
 			{
 				flag_put_pack.flag3 = true ; // nếu lệch 3mm
 				flag_put_pack.flag4 = false ;
@@ -370,7 +385,7 @@ static bool aPutPack()
 static FlagState flag_run_near_qr = {0,0,0,0} ;
 static bool aSlowHalfRoad()
 {
-	aUnSetSpeed(SPEED_VERRY_LOW);
+	aUnSetSpeed(SPEED_LOW);
 	static int pulse = 0 ;
 	static int delta_p = 0 ;
 	bool over_qr = false ;
@@ -383,7 +398,7 @@ static bool aSlowHalfRoad()
 	delta_p = sensor_signal.motor_parameter->PosActual - pulse;
 	if(abs(delta_p) >= distanceToPulses(DISTANCE_QR_X /3.3 ) || over_qr )
 	{
-		aSetSpeed(SPEED_VERRY_LOW);
+		aSetSpeed(SPEED_LOW);
 		flag_run_near_qr.flag1 = false ;
 		return true ;
 	}
@@ -399,15 +414,15 @@ static bool aSlowSpeed()
 	aSetSpeed(SPEED_LOW);  // đi chậm
 	return true ;
 }
-/**
- * @brief   Thực hiện đi rất chậm.
- */
-static bool aVerySlowSpeed()
-{
-    aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
-    aUnSetSpeed(SPEED_LOW);
-	return true ;
-}
+///**
+// * @brief   Thực hiện đi rất chậm.
+// */
+//static bool aVerySlowSpeed()
+//{
+//    aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+//    aUnSetSpeed(SPEED_LOW);
+//	return true ;
+//}
 /**
  * @brief   Thực hiện dừng đúng vị trí
  */
@@ -420,10 +435,11 @@ static bool aStop()
 	 * flag3 : change_acc
 	 * */
 	aSetSpeed(SPEED_VERRY_LOW);  // đi chậm dò mã
+    aUnSetSpeed(SPEED_LOW);
 	ShuttleAxis current_axis  = getAxisShuttle() ;
 	switch ((int)current_axis) {
 		case AXIS_X:
-			if(abs(qr.distanceY) <= 1)
+			if(abs(qr.distanceY) <= 3)
 			{
 				flag_stop_shuttle.flag2 = true ;
 			}else{
@@ -437,7 +453,7 @@ static bool aStop()
 			}
 			break;
 		case AXIS_Y:
-			if(abs(qr.distanceX) <= 1)
+			if(abs(qr.distanceX) <= 3)
 			{
 				flag_stop_shuttle.flag1 = true ;
 			}else
@@ -500,7 +516,7 @@ static bool aTakeAction(int action)
 			state = aSlowSpeed();
 			break;
 		case 14:
-			state = aVerySlowSpeed();
+			state = aSlowSpeed();
 			break;
 		case 15:
 			state = aStop();
@@ -650,11 +666,9 @@ void Autotask(void *argument)
 				break;
 			case 1: /* lệnh chạy shuttle mặc định*/
 				autoModeNomal();
-				aUnSetSpeed(SPEED_LOW);  // bỏ trạng thái đi chậm
 				break;
 			case 2: /* lệnh shuttle di chuyển chậm */
 				autoModeNomal();
-				aSetSpeed(SPEED_LOW); // đi chậm
 				break;
 			default:
 				break;
@@ -704,20 +718,24 @@ void autoTaskSupend()
 	server_cmd.adminCmd = 0;
 	if (!autoTask_suspended_state) {
 		missionComplete(0);
-		osThreadSuspend(AutoTaskHandle);
+		motorControl(false, false, 0, 0);
+		osDelay(10);
 		autoTask_suspended_state = true ;
 		auto_acc_nomal = false ;
 		MG_DEBUG(("AUTO TASK SUPEND \n"));
+		osThreadSuspend(AutoTaskHandle);
 	}
 }
 
 void autoTaskResume()
 {
 	if (autoTask_suspended_state) {
-		osThreadResume(AutoTaskHandle);
 		autoTask_suspended_state = false ;
 		reset_db_test();
 		reset_motorhandle();
+		motorControl(false, false, 0, 0);
+		osDelay(10);
+		osThreadResume(AutoTaskHandle);
 	}
 	db_shuttle_run.shuttleMode = 0 ;
 }

@@ -19,7 +19,7 @@ const osThreadAttr_t SyncTask_attributes = {
 
 uint8_t getPalletLiftingStatus()
 {
-	if(sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH || sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH )
+	if(sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH || sensor_signal.di_sensor.UP_LIMIT_PK2 == HIGH )
 	{
 		return 1 ;
 	}

@@ -78,12 +78,20 @@ void DigitalSensorRead(SENSOR_STATUS *sensor)
 	inputSignal.SelectMode		=  HAL_GPIO_ReadPin(SwitchSelectMode.Port, SwitchSelectMode.gpioPin);
 	inputSignal.S1_ISPALLET 	=  HAL_GPIO_ReadPin(PalletSensor1.Port, PalletSensor1.gpioPin);
 	inputSignal.S2_ISPALLET 	=  HAL_GPIO_ReadPin(PalletSensor2.Port, PalletSensor2.gpioPin);
-	inputSignal.X1_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorX1.Port, BarrierSensorX1.gpioPin) == 0 ? HIGH : LOW;
-	inputSignal.X2_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorX2.Port, BarrierSensorX2.gpioPin) == 0 ? HIGH : LOW;
-	inputSignal.Y1_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorY1.Port, BarrierSensorY1.gpioPin) == 0 ? HIGH : LOW;
-	inputSignal.Y2_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorY2.Port, BarrierSensorY2.gpioPin) == 0 ? HIGH : LOW;
-	inputSignal.X1_PACKAGE  	=  HAL_GPIO_ReadPin(PackageSensorX1.Port, PackageSensorX1.gpioPin) == 0 ? HIGH : LOW;
-	inputSignal.X2_PACKAGE  	=  HAL_GPIO_ReadPin(PackageSensorX2.Port, PackageSensorX2.gpioPin) == 0 ? HIGH : LOW;
+//	inputSignal.X1_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorX1.Port, BarrierSensorX1.gpioPin) == 0 ? HIGH : LOW;
+//	inputSignal.X2_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorX2.Port, BarrierSensorX2.gpioPin) == 0 ? HIGH : LOW;
+//	inputSignal.Y1_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorY1.Port, BarrierSensorY1.gpioPin) == 0 ? HIGH : LOW;
+//	inputSignal.Y2_BARRIER  	=  HAL_GPIO_ReadPin(BarrierSensorY2.Port, BarrierSensorY2.gpioPin) == 0 ? HIGH : LOW;
+//	inputSignal.X1_PACKAGE  	=  HAL_GPIO_ReadPin(PackageSensorX1.Port, PackageSensorX1.gpioPin) == 0 ? HIGH : LOW;
+//	inputSignal.X2_PACKAGE  	=  HAL_GPIO_ReadPin(PackageSensorX2.Port, PackageSensorX2.gpioPin) == 0 ? HIGH : LOW;
+
+	inputSignal.X1_BARRIER  	=  LOW;
+	inputSignal.X2_BARRIER  	=  LOW;
+	inputSignal.Y1_BARRIER  	=  LOW;
+	inputSignal.Y2_BARRIER  	=  LOW;
+	inputSignal.X1_PACKAGE  	=  LOW;
+	inputSignal.X2_PACKAGE  	=  LOW;
+
 	inputSignal.S1_RAIL_FRONT   =  HAL_GPIO_ReadPin(InRailFront.Port, InRailFront.gpioPin);
 	inputSignal.S2_RAIL_RIGHT   =  HAL_GPIO_ReadPin(InRailRight.Port, InRailRight.gpioPin);
 	inputSignal.S3_RAIL_BEHIND  =  HAL_GPIO_ReadPin(InRailBehind.Port, InRailBehind.gpioPin);

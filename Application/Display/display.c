@@ -49,7 +49,7 @@ static void displaytask(void *argument)
 				mb_setLed(0, 0, 254, 500, 250);  //Green
 				break;
 			case SHUTTLE_IS_WAITING_CMD:
-				mb_setLed(242, 135, 5, 500, 250);
+				mb_setLed(242, 5, 135, 500, 250);
 				break;
 			default:
 				mb_setLed(0, 0, 200, 100, 250);

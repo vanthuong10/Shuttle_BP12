@@ -139,18 +139,18 @@ void manualTaskSupend()
 {
 	if (!manualTask_suspended_state) {
 		acc_low = false;
-		osThreadSuspend(ManualTaskHandle);
 		manualTask_suspended_state = true ;
 		MG_DEBUG(("MANUAL TASK SUPEND \n"));
+		osThreadSuspend(ManualTaskHandle);
 	}
 }
 
 void manualTaskResume()
 {
 	if (manualTask_suspended_state) {
-		osThreadResume(ManualTaskHandle);
 		manualTask_suspended_state = false ;
 		resetManualMode();
+		osThreadResume(ManualTaskHandle);
 	}
 	db_shuttle_run.shuttleMode = 1 ;
 }
