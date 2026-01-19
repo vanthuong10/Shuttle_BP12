@@ -718,12 +718,12 @@ void autoTaskSupend()
 	server_cmd.adminCmd = 0;
 	if (!autoTask_suspended_state) {
 		missionComplete(0);
-		motorControl(false, false, 0, 0);
-		osDelay(10);
 		autoTask_suspended_state = true ;
 		auto_acc_nomal = false ;
 		MG_DEBUG(("AUTO TASK SUPEND \n"));
 		osThreadSuspend(AutoTaskHandle);
+		osDelay(10);
+		motorControl(false, false, 0, 0);
 	}
 }
 

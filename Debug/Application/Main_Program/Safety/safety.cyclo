@@ -8,7 +8,7 @@
 ../Application/Main_Program/Safety/safety.c:260:34:checkObstacleAxisX	12
 ../Application/Main_Program/Safety/safety.c:302:34:checkObjectAxisX	15
 ../Application/Main_Program/Safety/safety.c:346:34:checkPalletPositionAlarm	6
-../Application/Main_Program/Safety/safety.c:359:34:checkEmgButton	3
+../Application/Main_Program/Safety/safety.c:359:34:checkEmgButton	4
 ../Application/Main_Program/Safety/safety.c:378:34:checkLowPower	2
 ../Application/Main_Program/Safety/safety.c:394:34:checkMotorError	3
 ../Application/Main_Program/Safety/safety.c:415:34:checkQrConnectionError	3
@@ -18,4 +18,4 @@
 ../Application/Main_Program/Safety/safety.c:520:14:getShuttleErrorStatus	6
 ../Application/Main_Program/Safety/safety.c:567:13:safetyTask	6
 ../Application/Main_Program/Safety/safety.c:599:6:safetyTaskInit	1
-../Application/Main_Program/Safety/safety.c:603:6:shuttleErrorState	1
+../Application/Main_Program/Safety/safety.c:603:6:shuttleErrorState	3

@@ -242,6 +242,7 @@ void canOpenInit()
 	  canReciverCallBack(canOpenCallBack) ;
 	  Can_Start(&canOpen, MotorID[0]);
 }
+
 void IOControl(void *argument)
 {
 	mcp3208.begin(&hspi2,GPIOI,GPIO_PIN_0);
@@ -269,6 +270,7 @@ void IOControl(void *argument)
 
 			getDataBms();
 			sensor_signal.pressure_sensor = getPressure(mcp3208.readChannel(0));
+
 		}
 		if(sensor_signal.battery.temprature >= TEMPERATURE_RUN_FAN)  // bật quạt khi quá giới hạn nhiệt độ
 		{

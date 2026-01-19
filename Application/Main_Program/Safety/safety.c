@@ -359,7 +359,7 @@ static struct ShuttleAlarmStatus checkPalletPositionAlarm()
 static struct ShuttleAlarmStatus checkEmgButton()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	if((bool)sensor_signal.di_sensor.EMG_BUTTON || app_data.emg == 1)
+	if((bool)sensor_signal.di_sensor.EMG_BUTTON || app_data.emg == 1 || emg_state)
 	{
 		alarm.alarmState = true;
 		alarm.alarmtype = 0;
@@ -602,5 +602,5 @@ void safetyTaskInit()
 }
 bool shuttleErrorState()
 {
-	return shuttle_is_error;
+	return (shuttle_is_error || emg_state ? true : false);
 }

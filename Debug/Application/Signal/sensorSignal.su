@@ -10,5 +10,5 @@
 ../Application/Signal/sensorSignal.c:214:6:switch_mode_register_callback	16	static
 ../Application/Signal/sensorSignal.c:225:6:canOpenCallBack	16	static
 ../Application/Signal/sensorSignal.c:238:6:canOpenInit	8	static
-../Application/Signal/sensorSignal.c:245:6:IOControl	40	static
-../Application/Signal/sensorSignal.c:284:6:sensorTaskInit	8	static
+../Application/Signal/sensorSignal.c:246:6:IOControl	40	static
+../Application/Signal/sensorSignal.c:286:6:sensorTaskInit	8	static
