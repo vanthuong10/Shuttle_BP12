@@ -4,7 +4,7 @@
 ../Application/Signal/sensorSignal.c:98:6:getDataBms	1
 ../Application/Signal/sensorSignal.c:116:13:checkMotorConnecting	3
 ../Application/Signal/sensorSignal.c:137:13:checkQrReaderConnecting	3
-../Application/Signal/sensorSignal.c:158:13:motorStarting	4
+../Application/Signal/sensorSignal.c:158:13:motorStarting	3
 ../Application/Signal/sensorSignal.c:183:13:qrReaderStarting	4
 ../Application/Signal/sensorSignal.c:205:6:HAL_UARTEx_RxEventCallback	2
 ../Application/Signal/sensorSignal.c:214:6:switch_mode_register_callback	1

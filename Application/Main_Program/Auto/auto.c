@@ -267,10 +267,10 @@ static bool aGetPack()
 					if (!flag_get_pack.flag2) // nếu chưa thay đổi gia tốc
 					{
 						flag_get_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-					} else {
-						if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
-						else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
 					}
+					if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
+					else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
+
 				}
 				break ;
 			case AXIS_Y:
@@ -282,10 +282,10 @@ static bool aGetPack()
 					if(!flag_get_pack.flag4) // nếu chưa thay đổi gia tốc
 					{
 						flag_get_pack.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-					}else {
-						if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
-						else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
 					}
+					if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
+					else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
+
 				}
 				break;
 	    }
@@ -337,10 +337,9 @@ static bool aPutPack()
 				if (!flag_put_pack.flag2) // nếu chưa thay đổi gia tốc
 				{
 					flag_put_pack.flag2 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-				} else {
-					if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
-					else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
 				}
+				if(sensor_signal.qr_sensor->distanceY >1) {motorHandle.drirection = 2;} // qua phải
+				else if (sensor_signal.qr_sensor->distanceY <-1) {motorHandle.drirection = 4;} // qua trái
 			}
 			break ;
 		case AXIS_Y:
@@ -352,10 +351,9 @@ static bool aPutPack()
 				if(!flag_put_pack.flag4) // nếu chưa thay đổi gia tốc
 				{
 					flag_put_pack.flag4 = SDOProfileAcc(SHUTTLE_SLOW_ACC, MotorID[0]); // thay đổi gia tốc chậm
-				}else {
-					if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
-					else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
 				}
+				if(sensor_signal.qr_sensor->distanceX >1) {motorHandle.drirection = 3;} // chạy lùi
+				else if (sensor_signal.qr_sensor->distanceX <-1) {motorHandle.drirection = 1;} // chạy tiến
 			}
 			break;
     }

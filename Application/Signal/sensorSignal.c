@@ -159,20 +159,20 @@ static bool motorStarting()
 {
 	uint16_t timeout = 0;
 	sensor_signal.motor_parameter = &Kincoparam[0] ;
-	while (!Kincoparam[0].flagMotorConnected && timeout < 4000) // Đợi drive khởi động
+	while (!Kincoparam[0].flagMotorConnected && timeout < 2000) // Đợi drive khởi động
 	{
 		timeout++;
 		osDelay(5);
 	}
-	if (timeout >= 4000) {
-		// Báo lỗi nếu sau 5s động cơ chưa khởi động
-		return false ;
-	}
-	setHeartBeatTime(50, MotorID[0]);
+//	if (timeout >= 4000) {
+//		// Báo lỗi nếu sau 5s động cơ chưa khởi động
+//		return false ;
+//	}
+	setHeartBeatTime(100, MotorID[0]);
 	SetOperationMode(3, MotorID[0]);
 	SDOProfileDec(SHUTTLE_DEC, MotorID[0]);
 	SDOProfileAcc(SHUTTLE_ACC, MotorID[0]);
-	NMTmanagement(Open, MotorID[0]);
+	NMTmanagement(Open, 0x01);
 	printf("SERVO CONNECTED\n");
 	return true ;
 }
@@ -238,7 +238,7 @@ void canOpenCallBack(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 void canOpenInit()
 {
 	  FDCan_begin(&canOpen, &hfdcan1, 0 );
-	  CanCofigfilter(&canOpen, 0x11, 0x11);
+	  CanCofigfilter(&canOpen, 0x0, 0x0);
 	  canReciverCallBack(canOpenCallBack) ;
 	  Can_Start(&canOpen, MotorID[0]);
 }

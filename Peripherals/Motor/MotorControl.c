@@ -122,7 +122,7 @@ bool setHeartBeatTime(uint32_t vl, uint32_t id)
     Cankinco->TxHeader.Identifier = id ;
     uint16_t timeout = 0;
     temp = CreateMessage(HeartBeartTime, vl);
-    temp.mes[0] = 0x2F;
+    temp.mes[0] = 0x2B;
     do {
         FDCan_Write(Cankinco, temp.mes, DATA_BYTE_6);
         timeout++;

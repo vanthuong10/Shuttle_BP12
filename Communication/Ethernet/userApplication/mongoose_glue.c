@@ -20,7 +20,7 @@ struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,20) ,//MG_U32(10,14
 									 .s_pub_info = "shuttle/information",
 									 .s_pub_report = "shuttle/report" ,
 									 .s_pub_complete = "shuttle/completeMission" ,
-									 .no = "002"  };
+									 .no = "001"  };
 uint8_t *tcpConnectState;
 osMutexId_t mqttMutex;
 
@@ -153,12 +153,16 @@ void glue_mqtt_on_cmd(struct mg_connection *c, struct mg_mqtt_message *mm) {
 struct mg_connection *glue_mqtt_connect(struct mg_mgr *mgr,
                                         mg_event_handler_t fn) {
   const char *url = tcpConfig.mqttBroker;
+  static char client_id[32];
   struct mg_mqtt_opts opts;
   memset(&opts, 0, sizeof(opts));
   opts.clean = true;
   opts.user = mg_str(tcpConfig.mqttUser);
   opts.pass = mg_str(tcpConfig.mqttPass);
   opts.version = 4 ;
+  mg_snprintf(client_id, sizeof(client_id), "shuttle-%s", tcpConfig.no);
+  opts.keepalive = 30 ;
+  opts.client_id = mg_str(client_id);
   return mg_mqtt_connect(mgr, url, &opts, fn, NULL);
 }
 
