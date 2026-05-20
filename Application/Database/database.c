@@ -241,7 +241,7 @@ static void dataProcessTask(void *argument)
         	    	processingDataTopicHandle();
     	    	}
 
-    	    }else if (strncmp(mqtt_data.mqttm->topic.buf, TOPIC_RUN,15) == 0){
+    	    }else if (strncmp(mqtt_data.mqttm->topic.buf, TOPIC_RUN, 15) == 0){
     	    	mg_mqtt_pub(mqtt_data.con, &pub_opts);
     	    	processingDataTopicRun();
     	    }

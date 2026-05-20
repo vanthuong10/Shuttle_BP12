@@ -2,4 +2,4 @@
 ../Application/Main_Program/Manual/manual.c:124:6:resetManualMode	4	static
 ../Application/Main_Program/Manual/manual.c:130:6:manualTaskInit	8	static
 ../Application/Main_Program/Manual/manual.c:138:6:manualTaskSupend	8	static
-../Application/Main_Program/Manual/manual.c:148:6:manualTaskResume	8	static
+../Application/Main_Program/Manual/manual.c:150:6:manualTaskResume	8	static

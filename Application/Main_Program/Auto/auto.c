@@ -599,7 +599,7 @@ static void aResetFlag()
 	memset(&flag_run_near_qr,'\0', size_flag);  // reset cờ di chuyển 2 mã gần nhau
 	flag_take_action.flag1 = true ; // reset thời gian
 	cmdstatus.speedReg = 0 ; // reset thanh ghi tốc độ
-
+	auto_acc_nomal = false ;
 }
 
 /**
@@ -663,6 +663,7 @@ void Autotask(void *argument)
 				server_cmd.newMission = false; // reset flag get mission
 				aResetFlag();  // reset các cờ phục vụ chạy auto
 				aSetSpeed(SPEED_ZERO);		 // Vận tốc về 0
+				SDOProfileAcc(SHUTTLE_ACC, MotorID[0]);
 				break;
 			case 1: /* lệnh chạy shuttle mặc định*/
 				autoModeNomal();
@@ -718,12 +719,12 @@ void autoTaskSupend()
 	server_cmd.adminCmd = 0;
 	if (!autoTask_suspended_state) {
 		missionComplete(0);
-		motorControl(false, false, 0, 0);
-		osDelay(10);
 		autoTask_suspended_state = true ;
 		auto_acc_nomal = false ;
 		MG_DEBUG(("AUTO TASK SUPEND \n"));
 		osThreadSuspend(AutoTaskHandle);
+		osDelay(10);
+		motorControl(false, false, 0, 0);
 	}
 }
 

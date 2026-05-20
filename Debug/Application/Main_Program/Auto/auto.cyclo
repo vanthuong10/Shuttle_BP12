@@ -16,6 +16,6 @@
 ../Application/Main_Program/Auto/auto.c:590:13:aResetFlag	1
 ../Application/Main_Program/Auto/auto.c:609:13:autoModeNomal	8
 ../Application/Main_Program/Auto/auto.c:647:6:Autotask	11
-../Application/Main_Program/Auto/auto.c:707:6:autoTaskInit	3
-../Application/Main_Program/Auto/auto.c:716:6:autoTaskSupend	3
-../Application/Main_Program/Auto/auto.c:730:6:autoTaskResume	2
+../Application/Main_Program/Auto/auto.c:708:6:autoTaskInit	3
+../Application/Main_Program/Auto/auto.c:717:6:autoTaskSupend	3
+../Application/Main_Program/Auto/auto.c:731:6:autoTaskResume	2

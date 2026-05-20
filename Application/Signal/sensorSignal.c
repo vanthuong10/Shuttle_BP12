@@ -17,6 +17,7 @@ extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart6;
 extern UART_HandleTypeDef huart4;
 extern FDCAN_HandleTypeDef hfdcan1;
+extern FDCAN_HandleTypeDef hfdcan2;
 static uint64_t input_timer[4] = { 0, 0 , 0 ,0 };
 
 const osThreadAttr_t IOTask_attributes = {
@@ -45,7 +46,7 @@ float mapValue(float value, float fromLow, float fromHigh, float toLow, float to
  */
 float getPressure(uint16_t value_ADC)
 {
-	return mapValue(value_ADC, 0, 4095, 0, 250) ;
+	return mapValue(value_ADC, 0, 4095, 0, 250);
 }
 
 
@@ -159,12 +160,12 @@ static bool motorStarting()
 {
 	uint16_t timeout = 0;
 	sensor_signal.motor_parameter = &Kincoparam[0] ;
-	while (!Kincoparam[0].flagMotorConnected && timeout < 4000) // Đợi drive khởi động
+	while (!Kincoparam[0].flagMotorConnected && timeout < 8000) // Đợi drive khởi động
 	{
 		timeout++;
 		osDelay(5);
 	}
-	if (timeout >= 4000) {
+	if (timeout >= 8000) {
 		// Báo lỗi nếu sau 5s động cơ chưa khởi động
 		return false ;
 	}
@@ -269,6 +270,7 @@ void IOControl(void *argument)
 
 			getDataBms();
 			sensor_signal.pressure_sensor = getPressure(mcp3208.readChannel(0));
+
 		}
 		if(sensor_signal.battery.temprature >= TEMPERATURE_RUN_FAN)  // bật quạt khi quá giới hạn nhiệt độ
 		{

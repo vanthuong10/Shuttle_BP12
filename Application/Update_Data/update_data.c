@@ -17,6 +17,7 @@ const osThreadAttr_t SyncTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal2,
 };
 
+
 uint8_t getPalletLiftingStatus()
 {
 	if(sensor_signal.di_sensor.UP_LIMIT_PK1 == HIGH || sensor_signal.di_sensor.UP_LIMIT_PK2 == HIGH )
@@ -25,6 +26,7 @@ uint8_t getPalletLiftingStatus()
 	}
 	return 0 ;
 }
+
 
 static void getInfoBatery()
 {

@@ -140,6 +140,8 @@ void manualTaskSupend()
 	if (!manualTask_suspended_state) {
 		acc_low = false;
 		manualTask_suspended_state = true ;
+		motorControl(false, false, 0, 0);
+		osDelay(10);
 		MG_DEBUG(("MANUAL TASK SUPEND \n"));
 		osThreadSuspend(ManualTaskHandle);
 	}
@@ -149,6 +151,8 @@ void manualTaskResume()
 {
 	if (manualTask_suspended_state) {
 		manualTask_suspended_state = false ;
+		motorControl(false, false, 0, 0);
+		osDelay(10);
 		resetManualMode();
 		osThreadResume(ManualTaskHandle);
 	}
