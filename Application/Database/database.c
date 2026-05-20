@@ -128,12 +128,17 @@ void unlockCommandFromServer()
 
 static void resetCommand()
 {
+	server_cmd.missionId = 0;
+	server_cmd.totalStep = 0;
+	server_cmd.newMission = false;
 	memset(server_cmd.cmd_step,'\0',sizeof(server_cmd.cmd_step));
 }
 
 static void processingDataTopicHandle() {
 	double a;
 	resetCommand();
+	if(!mg_json_get_num(mqtt_data.mqttm->data, "$.id", &a)) return;  // return nếu không đúng định dạng json
+	server_cmd.missionId = (uint32_t) a;
 	if(!mg_json_get_num(mqtt_data.mqttm->data, "$.totalStep", &a)) return;  // return nếu không đúng định dạng json
 	server_cmd.totalStep = (int) a;
 //	printf("TotalStep: %d \n", server_cmd.totalStep);

@@ -70,6 +70,7 @@ typedef struct {
 typedef struct {
 	bool newMission;
 	bool newAdCmd;
+	uint32_t missionId;
 	uint8_t totalStep;
 	Step cmd_step[STEP_MAX] ;
 	uint8_t adminCmd;
