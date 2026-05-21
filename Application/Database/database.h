@@ -15,10 +15,11 @@ extern "C" {
 #include "stdint.h"
 #include "sensorSignal.h"
 
-#define SHUTTLE_ID "001"
-#define TOPIC_HANDLE  "shuttle/handle/001"
-#define TOPIC_RUN     "shuttle/run/001"
+#define SHUTTLE_ID "004"
+#define TOPIC_HANDLE  "shuttle/handle/004"
+#define TOPIC_RUN     "shuttle/run/004"
 #define STEP_MAX 20
+#define MISSION_ID_LEN 36
 
 typedef enum {
 	SHUTTLE_STOP ,
@@ -70,7 +71,7 @@ typedef struct {
 typedef struct {
 	bool newMission;
 	bool newAdCmd;
-	uint32_t missionId;
+	char missionId[MISSION_ID_LEN + 1];
 	uint8_t totalStep;
 	Step cmd_step[STEP_MAX] ;
 	uint8_t adminCmd;

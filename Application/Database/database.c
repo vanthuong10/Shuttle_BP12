@@ -5,6 +5,8 @@
  *      Author: ADMIN-HPZ2
  */
 #include "database.h"
+#include <stdlib.h>
+#include <string.h>
 #include "cmsis_os.h"
 #include "event_groups.h"
 #include "mongoose_glue.h"
@@ -126,9 +128,34 @@ void unlockCommandFromServer()
 	lock_cmd_state = false ;
 }
 
+static bool isUuidV4HexChar(char ch)
+{
+	return (ch >= '0' && ch <= '9') ||
+		   (ch >= 'a' && ch <= 'f') ||
+		   (ch >= 'A' && ch <= 'F');
+}
+
+static bool isUuidV4String(const char *uuid)
+{
+	if (uuid == NULL) return false;
+	for (size_t i = 0; i < MISSION_ID_LEN; i++) {
+		char ch = uuid[i];
+		if (i == 8 || i == 13 || i == 18 || i == 23) {
+			if (ch != '-') return false;
+		} else if (i == 14) {
+			if (ch != '4') return false;
+		} else if (i == 19) {
+			if (!(ch == '8' || ch == '9' || ch == 'a' || ch == 'A' || ch == 'b' || ch == 'B')) return false;
+		} else if (!isUuidV4HexChar(ch)) {
+			return false;
+		}
+	}
+	return uuid[MISSION_ID_LEN] == '\0';
+}
+
 static void resetCommand()
 {
-	server_cmd.missionId = 0;
+	memset(server_cmd.missionId, '\0', sizeof(server_cmd.missionId));
 	server_cmd.totalStep = 0;
 	server_cmd.newMission = false;
 	memset(server_cmd.cmd_step,'\0',sizeof(server_cmd.cmd_step));
@@ -137,9 +164,17 @@ static void resetCommand()
 static void processingDataTopicHandle() {
 	double a;
 	resetCommand();
-	if(!mg_json_get_num(mqtt_data.mqttm->data, "$.id", &a)) return;  // return nếu không đúng định dạng json
-	server_cmd.missionId = (uint32_t) a;
-	if(!mg_json_get_num(mqtt_data.mqttm->data, "$.totalStep", &a)) return;  // return nếu không đúng định dạng json
+	char *mission_id = mg_json_get_str(mqtt_data.mqttm->data, "$.id");
+	if(mission_id == NULL) return;
+	if(!isUuidV4String(mission_id)) {
+		free(mission_id);
+		resetCommand();
+		return;
+	}
+	memcpy(server_cmd.missionId, mission_id, MISSION_ID_LEN);
+	server_cmd.missionId[MISSION_ID_LEN] = '\0';
+	free(mission_id);
+	if(!mg_json_get_num(mqtt_data.mqttm->data, "$.totalStep", &a)) { resetCommand(); return; }
 	server_cmd.totalStep = (int) a;
 //	printf("TotalStep: %d \n", server_cmd.totalStep);
 	if(server_cmd.totalStep >= STEP_MAX) { resetCommand(); return; } // return nếu gửi quá lệnh

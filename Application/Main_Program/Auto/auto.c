@@ -109,7 +109,7 @@ static void aSelectSpeed()
 static void clearMission()
 {
 	memset(&cmdstatus, 0 , sizeof(struct CmdStatus));  // clear status command
-	server_cmd.missionId = 0;
+	memset(server_cmd.missionId, '\0', sizeof(server_cmd.missionId));
 	server_cmd.totalStep = 0;
 	memset(server_cmd.cmd_step, '\0', sizeof(server_cmd.cmd_step));	   // clear mission
 	unlockCommandFromServer();  // sẵn sàng nhận nhiệm vụ mới
@@ -125,8 +125,8 @@ static void missionComplete(int state)
 	db_shuttle_run.cmdComplete = cmdstatus.complete;
 	char buf[128];
 	memset(buf, 0,sizeof(buf));
-	mg_snprintf(buf, sizeof(buf),"{ %m:%lu, %m:%d, %m:%m }",
-			MG_ESC("id"), (unsigned long) server_cmd.missionId,
+	mg_snprintf(buf, sizeof(buf),"{ %m:%m, %m:%d, %m:%m }",
+			MG_ESC("id"), MG_ESC(server_cmd.missionId),
 			MG_ESC("status"), state,
 			MG_ESC("qrCode"), MG_ESC(sensor_signal.qr_sensor->Tag));
 	struct mg_str json = mg_str(buf);
