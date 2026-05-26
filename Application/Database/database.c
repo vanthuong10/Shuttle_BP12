@@ -135,11 +135,16 @@ static bool isUuidV4HexChar(char ch)
 		   (ch >= 'A' && ch <= 'F');
 }
 
-static bool isUuidV4String(const char *uuid)
+static bool isDigitChar(char ch)
 {
-	if (uuid == NULL) return false;
-	for (size_t i = 0; i < MISSION_ID_LEN; i++) {
-		char ch = uuid[i];
+	return ch >= '0' && ch <= '9';
+}
+
+static bool isMissionIdString(const char *mission_id)
+{
+	if (mission_id == NULL) return false;
+	for (size_t i = 0; i < UUID_V4_LEN; i++) {
+		char ch = mission_id[i];
 		if (i == 8 || i == 13 || i == 18 || i == 23) {
 			if (ch != '-') return false;
 		} else if (i == 14) {
@@ -150,7 +155,11 @@ static bool isUuidV4String(const char *uuid)
 			return false;
 		}
 	}
-	return uuid[MISSION_ID_LEN] == '\0';
+	if (mission_id[UUID_V4_LEN] != '-') return false;
+	for (size_t i = UUID_V4_LEN + 1; i < MISSION_ID_LEN; i++) {
+		if (!isDigitChar(mission_id[i])) return false;
+	}
+	return mission_id[MISSION_ID_LEN] == '\0';
 }
 
 static void resetCommand()
@@ -166,7 +175,7 @@ static void processingDataTopicHandle() {
 	resetCommand();
 	char *mission_id = mg_json_get_str(mqtt_data.mqttm->data, "$.id");
 	if(mission_id == NULL) return;
-	if(!isUuidV4String(mission_id)) {
+	if(!isMissionIdString(mission_id)) {
 		free(mission_id);
 		resetCommand();
 		return;
