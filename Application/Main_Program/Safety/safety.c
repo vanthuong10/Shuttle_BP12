@@ -12,54 +12,28 @@
 #include "hydraulic.h"
 #include "display.h"
 
-#define TAG_LIMIT_NUM 6
-#define TAG_SKIP_NUM 7
+#define TAG_LIMIT_NUM 2
+#define TAG_SKIP_NUM 2
 #define TAG_SKIP_OBJ_NUM 6
 #define DISTANCE_ERROR_SET 60
 #define LOW_POWER_SET 25
 
-const char tag_limit_front[TAG_LIMIT_NUM][32] = { "X0000Y0045",
-												  "X0004Y0001",
+const char tag_limit_front[TAG_LIMIT_NUM][32] = { "E0001R0001",
 };
 
-const char tag_limit_back[TAG_LIMIT_NUM][32] = { "X0000Y0000",
-												 "X0000Y0023",
-												 "X0015Y0001",
-												 "X0015Y0002"
-
+const char tag_limit_back[TAG_LIMIT_NUM][32] = { "E0003R0003",
 };
 
-const char tag_limit_left[TAG_LIMIT_NUM][32] = { "X0000Y0045",
-												 "X0000Y0025",
-												 "X0000Y0002",
-												 "X0004Y0002",
-												 "X0015Y0001",
-												 "X0015Y0000"
+const char tag_limit_left[TAG_LIMIT_NUM][32] = { "E0004R0004",
 };
 
-const char tag_limit_right[TAG_LIMIT_NUM][32] = { "X0004Y0001",
-												  "X0003Y0004",
-												  "X0000Y0044",
-												  "X0000Y0021",
-												  "X0015Y0003",
-												  "X0015Y0002"
+const char tag_limit_right[TAG_LIMIT_NUM][32] = { "E0002R0002",
 };
 
-const char tag_skip_error[TAG_SKIP_NUM][32]   = { "X0000Y0023",
-												  "X0000Y0022",
-												  "X0000Y0001",
-												  "X0000Y0000",
-												  "X0000Y0021",
-												  "X0000Y0002",
-												  "X0000Y0003"
+const char tag_skip_error[TAG_SKIP_NUM][32]   = { "X0000Y0055",
 };
 
-const char tag_skip_error_obj[TAG_SKIP_OBJ_NUM][32]   = { "X0000Y0002",
-														  "X0000Y0025",
-														  "X0000Y0045",
-														  "X0000Y0021",
-														  "X0000Y0044",
-														  "X0003Y0004"
+const char tag_skip_error_obj[TAG_SKIP_OBJ_NUM][32]   = { "X0000Y00055"
 };
 
 static bool error_limit_tag_state = false ;
@@ -228,10 +202,10 @@ static struct ShuttleAlarmStatus checkObstacleAxisY()
 	}
 	if(sensor_signal.motor_parameter->TargetSpeed < 0)
 	{
-		for(int i = 0; i< TAG_SKIP_NUM; i++)
-		{
-			if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error[i])) return alarm; // bỏ qua cảm biến vật cản tại 2 đầu
-		}
+//		for(int i = 0; i< TAG_SKIP_NUM; i++)
+//		{
+//			if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error[i])) return alarm; // bỏ qua cảm biến vật cản tại 2 đầu
+//		}
 		if(sensorTrigger(&count_sensor_trigger[0], sensor_signal.di_sensor.Y1_BARRIER))
 		{
 			photoelectric_ss_state[0] = true ;
@@ -261,13 +235,13 @@ static struct ShuttleAlarmStatus checkObstacleAxisX()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
 	if(db_shuttle_run.shuttleMode == 1 ) return alarm;  // Chế độ manual và hướng Y không cần kiểm tra lỗi
-	for (int i = 0; i < TAG_SKIP_OBJ_NUM; i++) {
-			if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error_obj[i]))
-			{
-				photoelectric_ss_state[1] = false;
-				return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
-			}
-	}
+//	for (int i = 0; i < TAG_SKIP_OBJ_NUM; i++) {
+//			if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error_obj[i]))
+//			{
+//				photoelectric_ss_state[1] = false;
+//				return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
+//			}
+//	}
 	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1 || !db_shuttle_run.motor_is_run )
 	{
 		count_sensor_trigger[2] = 0 ;
@@ -302,14 +276,14 @@ static struct ShuttleAlarmStatus checkObstacleAxisX()
 static struct ShuttleAlarmStatus checkObjectAxisX()
 {
 	struct ShuttleAlarmStatus alarm = { false, 0, 0 };
-	for (int i = 0; i < TAG_SKIP_OBJ_NUM; i++) {
-		if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error_obj[i]))
-		{
-			photoelectric_ss_state[2] = false;
-			return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
-		}
-
-	}
+//	for (int i = 0; i < TAG_SKIP_OBJ_NUM; i++) {
+//		if (checkQrcode(sensor_signal.qr_sensor->Tag, tag_skip_error_obj[i]))
+//		{
+//			photoelectric_ss_state[2] = false;
+//			return alarm; // bỏ qua cảm biến phát hiện pallet tại 2 đầu
+//		}
+//
+//	}
 	if(getAxisShuttle() != AXIS_X || db_shuttle_run.shuttleMode == 1 || (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK1
 			|| (bool) sensor_signal.di_sensor.DOWN_LIMIT_PK2 || !db_shuttle_run.motor_is_run)
 	{

@@ -8,7 +8,7 @@
 #include "mongoose_glue.h"
 #include "cmsis_os.h"
 
-struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,14) ,//MG_U32(10,14,16,34) ,
+struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,20) ,//MG_U32(10,14,16,34) ,
 									 .mask = MG_U32(255,255,254,0),
 									 .gw   = MG_U32(10,14,64,1),
 									 .mqttBroker = "mqtt://10.14.64.11:1991",
@@ -20,7 +20,7 @@ struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,14) ,//MG_U32(10,14
 									 .s_pub_info = "shuttle/information",
 									 .s_pub_report = "shuttle/report" ,
 									 .s_pub_complete = "shuttle/completeMission" ,
-									 .no = "002"  };
+									 .no = "001"  };
 uint8_t *tcpConnectState;
 osMutexId_t mqttMutex;
 
