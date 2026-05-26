@@ -61,7 +61,6 @@ extern FDCAN_HandleTypeDef hfdcan2;
 extern DMA_HandleTypeDef hdma_i2c3_tx;
 extern I2C_HandleTypeDef hi2c3;
 extern DMA_HandleTypeDef hdma_tim1_ch3;
-extern DMA_HandleTypeDef hdma_tim1_ch2;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart7;
 extern TIM_HandleTypeDef htim6;
@@ -197,20 +196,6 @@ void DMA1_Stream2_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA1 stream3 global interrupt.
-  */
-void DMA1_Stream3_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Stream3_IRQn 0 */
-
-  /* USER CODE END DMA1_Stream3_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_tim1_ch2);
-  /* USER CODE BEGIN DMA1_Stream3_IRQn 1 */
-
-  /* USER CODE END DMA1_Stream3_IRQn 1 */
-}
-
-/**
   * @brief This function handles FDCAN1 interrupt 0.
   */
 void FDCAN1_IT0_IRQHandler(void)
@@ -269,16 +254,16 @@ void TIM6_DAC_IRQHandler(void)
 /**
   * @brief This function handles Ethernet global interrupt.
   */
-//void ETH_IRQHandler(void)
-//{
-//  /* USER CODE BEGIN ETH_IRQn 0 */
-//
-//  /* USER CODE END ETH_IRQn 0 */
-//  HAL_ETH_IRQHandler(&heth);
-//  /* USER CODE BEGIN ETH_IRQn 1 */
-//
-//  /* USER CODE END ETH_IRQn 1 */
-//}
+// void ETH_IRQHandler(void)
+// {
+//   /* USER CODE BEGIN ETH_IRQn 0 */
+// //
+//   /* USER CODE END ETH_IRQn 0 */
+//   HAL_ETH_IRQHandler(&heth);
+//   /* USER CODE BEGIN ETH_IRQn 1 */
+// //
+//   /* USER CODE END ETH_IRQn 1 */
+// }
 
 /**
   * @brief This function handles I2C3 event interrupt.
