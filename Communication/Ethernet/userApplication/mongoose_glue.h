@@ -41,7 +41,15 @@ void mongoose_init(void);    // Initialise Mongoose
 void mongoose_poll(void);    // Poll Mongoose
 extern struct mg_mgr g_mgr;  // Mongoose event manager
 void glue_init(void);        // Called at the end of mongoose_init()
-extern char topicBff[3][64];
+#define MQTT_TOPIC_INFO        0U
+#define MQTT_TOPIC_REPORT      1U
+#define MQTT_TOPIC_COMPLETE    2U
+#define MQTT_TOPIC_SUB_HANDLE  3U
+#define MQTT_TOPIC_SUB_RUN     4U
+#define MQTT_TOPIC_SUB_ADMIN   5U
+#define MQTT_TOPIC_COUNT       6U
+
+extern char topicBff[MQTT_TOPIC_COUNT][64];
 #define run_mongoose() \
   do {                 \
     mongoose_init();   \
@@ -137,14 +145,16 @@ void glue_get_leds(struct leds *);
 void glue_set_leds(struct leds *);
 
 struct settings {
-  char string_val[40];
-  int log_level;
-  double double_val;
-  int int_val;
-  bool bool_val;
+  char device_id[16];
+  char ip[16];
+  char mask[16];
+  char gateway[16];
+  bool saved;
+  char message[64];
 };
 void glue_get_settings(struct settings *);
 void glue_set_settings(struct settings *);
+const char *glue_get_device_id(void);
 
 struct security {
   char admin_password[40];

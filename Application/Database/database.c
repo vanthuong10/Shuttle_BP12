@@ -239,14 +239,14 @@ static void dataProcessTask(void *argument)
         	pub_opts.topic = mg_str(topicBff[1]);
     	    MG_INFO(("%lu RECEIVED %.*s <- %.*s", mqtt_data.con->id, (int) mqtt_data.mqttm->data.len,
     	    		mqtt_data.mqttm->data.buf, (int) mqtt_data.mqttm->topic.len, mqtt_data.mqttm->topic.buf));
-    	    if(strncmp(mqtt_data.mqttm->topic.buf, TOPIC_HANDLE,18) == 0){
+	    if(mg_strcmp(mqtt_data.mqttm->topic, mg_str(topicBff[MQTT_TOPIC_SUB_HANDLE])) == 0){
     	    	mg_mqtt_pub(mqtt_data.con, &pub_opts);
     	    	if(!lock_cmd_state)
     	    	{
         	    	processingDataTopicHandle();
     	    	}
 
-    	    }else if (strncmp(mqtt_data.mqttm->topic.buf, TOPIC_RUN, 15) == 0){
+	    }else if (mg_strcmp(mqtt_data.mqttm->topic, mg_str(topicBff[MQTT_TOPIC_SUB_RUN])) == 0){
     	    	mg_mqtt_pub(mqtt_data.con, &pub_opts);
     	    	processingDataTopicRun();
     	    }

@@ -442,11 +442,12 @@ static struct ShuttleErrorStatus checkOverLoad()
 static struct ShuttleErrorStatus checkOverTimeHydraulic()
 {
 	struct ShuttleErrorStatus error = { false, 0, 0 };
-	if(checkErrorHydraulic())
+	uint16_t hydraulic_error = hydraulicGetErrorCode();
+	if(hydraulic_error != HYDRAULIC_ERROR_NONE)
 	{
 		error.errorState = true ;
 		error.errortype  = 2 ;
-		error.ErrorCode  = 2 ;
+		error.ErrorCode  = hydraulic_error ;
 	}
 	return error ;
 }

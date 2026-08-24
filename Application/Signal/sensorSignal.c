@@ -209,6 +209,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	{
 		bmsContinute();
 	}
+	else if(huart->Instance == UART4)
+	{
+		hydraulicUartRxEventCallback(huart, Size);
+	}
 
 }
 
@@ -269,6 +273,7 @@ void IOControl(void *argument)
 		if (u_timer_expired(&input_timer[0], 300, now)) {   // 300 ms đọc giá trị áp suất và pin 1 lần
 
 			getDataBms();
+			hydraulicDriverPoll();
 			sensor_signal.pressure_sensor = getPressure(mcp3208.readChannel(0));
 
 		}

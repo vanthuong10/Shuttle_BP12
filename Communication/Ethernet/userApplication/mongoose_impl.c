@@ -95,11 +95,12 @@ struct attribute s_leds_attributes[] = {
   {NULL, NULL, NULL, 0, 0, false}
 };
 struct attribute s_settings_attributes[] = {
-  {"string_val", "string", NULL, offsetof(struct settings, string_val), 40, false},
-  {"log_level", "int", NULL, offsetof(struct settings, log_level), 0, false},
-  {"double_val", "double", "%.5f", offsetof(struct settings, double_val), 0, false},
-  {"int_val", "int", NULL, offsetof(struct settings, int_val), 0, false},
-  {"bool_val", "bool", NULL, offsetof(struct settings, bool_val), 0, false},
+  {"device_id", "string", NULL, offsetof(struct settings, device_id), 16, false},
+  {"ip", "string", NULL, offsetof(struct settings, ip), 16, false},
+  {"mask", "string", NULL, offsetof(struct settings, mask), 16, false},
+  {"gateway", "string", NULL, offsetof(struct settings, gateway), 16, false},
+  {"saved", "bool", NULL, offsetof(struct settings, saved), 0, true},
+  {"message", "string", NULL, offsetof(struct settings, message), 64, true},
   {NULL, NULL, NULL, 0, 0, false}
 };
 struct attribute s_security_attributes[] = {
@@ -441,6 +442,18 @@ static void handle_api_call(struct mg_connection *c, struct mg_http_message *hm,
 void glue_update_state(void) {
   s_device_change_version++;
 }
+
+static void handle_device_config_page(struct mg_connection *c) {
+  static const char page[] =
+      "<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
+      "<title>Shuttle network configuration</title><style>body{font-family:system-ui;max-width:460px;margin:2rem auto;padding:0 1rem}label,input,button{display:block;width:100%;box-sizing:border-box}label{margin-top:1rem;font-weight:600}input,button{padding:.65rem;margin-top:.35rem}button{margin-top:1.5rem}#status{white-space:pre-wrap}</style></head><body>"
+      "<h1>Shuttle configuration</h1><p>Enter administrator credentials when requested. Saving restarts the device.</p>"
+      "<form id=f><label>Device ID<input id=device_id maxlength=15 pattern='[A-Za-z0-9_-]+' required></label>"
+      "<label>IP address<input id=ip inputmode=decimal required></label><label>Subnet mask<input id=mask inputmode=decimal required></label>"
+      "<label>Gateway<input id=gateway inputmode=decimal required></label><button>Save and reboot</button></form><p id=status></p>"
+      "<script>let auth='';const ids=['device_id','ip','mask','gateway'],s=document.querySelector('#status');async function api(o){return fetch('/api/settings',Object.assign({headers:{Authorization:auth}},o||{}))}async function load(){let u=prompt('Administrator username','admin'),p=prompt('Administrator password');if(u===null||p===null)return;auth='Basic '+btoa(u+':'+p);let r=await api();if(!r.ok){s.textContent='Authentication failed ('+r.status+').';return}let d=await r.json();ids.forEach(k=>document.querySelector('#'+k).value=d[k]||'');s.textContent=d.message||''}document.querySelector('#f').onsubmit=async e=>{e.preventDefault();let d={};ids.forEach(k=>d[k]=document.querySelector('#'+k).value.trim());let r=await api({method:'POST',headers:{Authorization:auth,'Content-Type':'application/json'},body:JSON.stringify(d)});let a=await r.json();s.textContent=a.message||'Configuration was not saved.';if(a.saved)s.textContent+='\\nReconnect to http://'+d.ip+'/config after restart.'};load();</script></body></html>";
+  mg_http_reply(c, 200, "Content-Type: text/html; charset=utf-8\r\nCache-Control: no-cache\r\n", "%s", page);
+}
 #endif  // WIZARD_ENABLE_HTTP_UI
 
 // Mongoose event handler function, gets called by the mg_mgr_poll()
@@ -479,6 +492,8 @@ static void http_ev_handler(struct mg_connection *c, int ev, void *ev_data) {
     } else if (mg_match(hm->uri, mg_str("/api/heartbeat"), NULL)) {
       mg_http_reply(c, 200, JSON_HEADERS, "{%m:%lu}\n", MG_ESC("version"),
                     s_device_change_version);
+    } else if (mg_match(hm->uri, mg_str("/config"), NULL)) {
+      handle_device_config_page(c);
     } else if (h != NULL) {
       handle_api_call(c, hm, h);
     } else

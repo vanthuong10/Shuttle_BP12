@@ -8,6 +8,7 @@
 #include "update_data.h"
 #include "cmsis_os.h"
 #include "safety.h"
+#include "mongoose_glue.h"
 
 osThreadId_t SyncTaskHandle;
 osMutexId_t jsonCreateMutex;
@@ -123,7 +124,7 @@ static void inforUpdatetask(void *argument)
 {
 
 	struct mg_tcpip_if *mif = (struct mg_tcpip_if *) g_mgr.priv ;
-	db_shuttle_info.no = SHUTTLE_ID ;
+	db_shuttle_info.no = (char *) glue_get_device_id();
 	db_shuttle_run.statusReg = 0 ;
 	static char tmp_buf[32];
 	char buf[512];

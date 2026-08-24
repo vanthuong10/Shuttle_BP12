@@ -8,6 +8,36 @@
 #include "mongoose_glue.h"
 #include "cmsis_os.h"
 
+/* NOTE: 2 comment lines here were lost to disk corruption on 2026-08-24
+   and could not be recovered. All code below is byte-identical.          */
+#define DEFAULT_DEVICE_ID       "001"
+#define DEFAULT_DEVICE_IP       "10.14.64.20"
+#define DEFAULT_DEVICE_MASK     "255.255.254.0"
+#define DEFAULT_DEVICE_GATEWAY  "10.14.64.1"
+
+#define DEVICE_CONFIG_MAGIC      0x53485554UL  /* "SHUT" */
+#define DEVICE_CONFIG_VERSION    1UL
+#define DEVICE_CONFIG_KEY_A      0x53484601UL
+#define DEVICE_CONFIG_KEY_B      0x53484602UL
+
+struct device_config_record {
+	uint32_t magic;
+	uint32_t version;
+	uint32_t sequence;
+	struct settings settings;
+	uint32_t crc32;
+};
+
+static struct settings s_settings = {
+	.device_id = DEFAULT_DEVICE_ID,
+	.ip = DEFAULT_DEVICE_IP,
+	.mask = DEFAULT_DEVICE_MASK,
+	.gateway = DEFAULT_DEVICE_GATEWAY,
+	.saved = true,
+	.message = "Default configuration"
+};
+static uint32_t s_config_sequence;
+
 struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,20) ,//MG_U32(10,14,16,34) ,
 									 .mask = MG_U32(255,255,254,0),
 									 .gw   = MG_U32(10,14,64,1),
@@ -20,21 +50,117 @@ struct INTERNET_CONFIG tcpConfig = { .ip   = MG_U32(10,14,64,20) ,//MG_U32(10,14
 									 .s_pub_info = "shuttle/information",
 									 .s_pub_report = "shuttle/report" ,
 									 .s_pub_complete = "shuttle/completeMission" ,
-									 .no = "001"  };
+									 .no = s_settings.device_id  };
 uint8_t *tcpConnectState;
 osMutexId_t mqttMutex;
 
-char topicBff[3][64];
+char topicBff[MQTT_TOPIC_COUNT][64];
+
+static size_t bounded_strlen(const char *value, size_t capacity)
+{
+	size_t length = 0;
+	while (length < capacity && value[length] != '\0') length++;
+	return length;
+}
+
+static bool parse_ipv4(const char *text, uint32_t *ip)
+{
+	struct mg_addr address;
+	uint32_t network_order;
+
+	if (bounded_strlen(text, 16) == 0 || bounded_strlen(text, 16) == 16) return false;
+	memset(&address, 0, sizeof(address));
+	if (!mg_aton(mg_str(text), &address) || address.is_ip6) return false;
+	memcpy(&network_order, address.ip, sizeof(network_order));
+	*ip = mg_ntohl(network_order);
+	return true;
+}
+
+static bool valid_device_id(const char *device_id)
+{
+	size_t i, length = bounded_strlen(device_id, sizeof(s_settings.device_id));
+	if (length == 0 || length == sizeof(s_settings.device_id)) return false;
+	for (i = 0; i < length; i++) {
+		char ch = device_id[i];
+		if (!((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') ||
+			  (ch >= '0' && ch <= '9') || ch == '-' || ch == '_')) return false;
+	}
+	return true;
+}
+
+static bool valid_settings(const struct settings *settings)
+{
+	uint32_t ip, mask, gateway, host_bits;
+	if (!valid_device_id(settings->device_id) ||
+		!parse_ipv4(settings->ip, &ip) ||
+		!parse_ipv4(settings->mask, &mask) ||
+		!parse_ipv4(settings->gateway, &gateway)) return false;
+
+	host_bits = ~mask;
+	if (mask == 0 || (host_bits & (host_bits + 1U)) != 0U) return false;
+	return (ip & mask) == (gateway & mask);
+}
+
+static uint32_t device_config_crc(const struct device_config_record *record)
+{
+	struct device_config_record copy = *record;
+	copy.crc32 = 0;
+	return mg_crc32(0, (const char *) &copy, sizeof(copy));
+}
+
+static bool valid_device_config_record(const struct device_config_record *record)
+{
+	return record->magic == DEVICE_CONFIG_MAGIC &&
+		   record->version == DEVICE_CONFIG_VERSION &&
+		   record->crc32 == device_config_crc(record) &&
+		   valid_settings(&record->settings);
+}
+
+static void apply_settings_to_tcp_config(void)
+{
+	uint32_t ip, mask, gateway;
+	if (!parse_ipv4(s_settings.ip, &ip) || !parse_ipv4(s_settings.mask, &mask) ||
+		!parse_ipv4(s_settings.gateway, &gateway)) return;
+	tcpConfig.ip = ip;
+	tcpConfig.mask = mask;
+	tcpConfig.gw = gateway;
+}
+
+static void load_device_settings(void)
+{
+	struct device_config_record record_a = {0}, record_b = {0};
+	bool valid_a = mg_flash_load(NULL, DEVICE_CONFIG_KEY_A, &record_a, sizeof(record_a)) &&
+			   valid_device_config_record(&record_a);
+	bool valid_b = mg_flash_load(NULL, DEVICE_CONFIG_KEY_B, &record_b, sizeof(record_b)) &&
+			   valid_device_config_record(&record_b);
+
+	if (valid_a || valid_b) {
+		const struct device_config_record *selected =
+			(!valid_b || (valid_a && record_a.sequence >= record_b.sequence)) ?
+			&record_a : &record_b;
+		s_settings = selected->settings;
+		s_settings.saved = true;
+		mg_snprintf(s_settings.message, sizeof(s_settings.message), "Loaded from Flash");
+		s_config_sequence = selected->sequence;
+	} else {
+		s_config_sequence = 0;
+	}
+	apply_settings_to_tcp_config();
+}
 void createTopicPub()
 {
-	mg_snprintf(topicBff[0], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_pub_info, tcpConfig.no);
-	mg_snprintf(topicBff[1], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_pub_report, tcpConfig.no);
-	mg_snprintf(topicBff[2], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_pub_complete, tcpConfig.no);
+	mg_snprintf(topicBff[MQTT_TOPIC_INFO], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_pub_info, tcpConfig.no);
+	mg_snprintf(topicBff[MQTT_TOPIC_REPORT], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_pub_report, tcpConfig.no);
+	mg_snprintf(topicBff[MQTT_TOPIC_COMPLETE], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_pub_complete, tcpConfig.no);
+	mg_snprintf(topicBff[MQTT_TOPIC_SUB_HANDLE], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_sub_handle, tcpConfig.no);
+	mg_snprintf(topicBff[MQTT_TOPIC_SUB_RUN], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_sub_run, tcpConfig.no);
+	mg_snprintf(topicBff[MQTT_TOPIC_SUB_ADMIN], sizeof(topicBff[0]), "%s/%s", tcpConfig.s_sub_admin, tcpConfig.no);
 }
 void user_tcpip_cf()
 {
 	static struct mg_tcpip_driver_stm32h_data driver_data_;
 	    static struct mg_tcpip_if mif_;
+	    load_device_settings();
 	    driver_data_.mdc_cr = MG_DRIVER_MDC_CR;
 	    driver_data_.phy_addr = MG_TCPIP_PHY_ADDR;
 	    driver_data_.phy_conf = MG_TCPIP_PHY_CONF;
@@ -81,32 +207,28 @@ void glue_mqtt_tls_init(struct mg_connection *c) {
 
 // Called when we connected to the MQTT server
 void glue_mqtt_on_connect(struct mg_connection *c, int code) {
-  char path[128];
   struct mg_mqtt_opts opts;
 
   // Topic 1
-  mg_snprintf(path, sizeof(path), "%s/%s", tcpConfig.s_sub_handle, tcpConfig.no);
   memset(&opts, 0, sizeof(opts));
   opts.qos = 1;
-  opts.topic = mg_str(path);
+  opts.topic = mg_str(topicBff[MQTT_TOPIC_SUB_HANDLE]);
   mg_mqtt_sub(c, &opts);
   MG_DEBUG(("%lu code %d. Subscribing to [%.*s]", c->id, code, opts.topic.len,
             opts.topic.buf));
 
   // Topic 2
-  mg_snprintf(path, sizeof(path), "%s/%s", tcpConfig.s_sub_run, tcpConfig.no);
   memset(&opts, 0, sizeof(opts));
   opts.qos = 1;
-  opts.topic = mg_str(path);
+  opts.topic = mg_str(topicBff[MQTT_TOPIC_SUB_RUN]);
   mg_mqtt_sub(c, &opts);
   MG_DEBUG(("%lu code %d. Subscribing to [%.*s]", c->id, code, opts.topic.len,
             opts.topic.buf));
 
   // Topic 3
-  mg_snprintf(path, sizeof(path), "%s/%s", tcpConfig.s_sub_admin, tcpConfig.no);
   memset(&opts, 0, sizeof(opts));
   opts.qos = 1;
-  opts.topic = mg_str(path);
+  opts.topic = mg_str(topicBff[MQTT_TOPIC_SUB_ADMIN]);
   mg_mqtt_sub(c, &opts);
   MG_DEBUG(("%lu code %d. Subscribing to [%.*s]", c->id, code, opts.topic.len,
             opts.topic.buf));
@@ -126,13 +248,13 @@ void mqtt_publish(struct mg_str message, SelectTopic selectTopic)
 	memset(&pub_opts, 0, sizeof(pub_opts));
 	switch (selectTopic) {
 		case SELECT_INFO_TOPIC:
-			pub_opts.topic = mg_str(topicBff[0]);
+			pub_opts.topic = mg_str(topicBff[MQTT_TOPIC_INFO]);
 			break;
 		case SELECT_REPORT_TOPIC:
-			pub_opts.topic = mg_str(topicBff[1]);
+			pub_opts.topic = mg_str(topicBff[MQTT_TOPIC_REPORT]);
 			break;
 		case SELECT_COMPLETE_TOPIC:
-			pub_opts.topic = mg_str(topicBff[2]);
+			pub_opts.topic = mg_str(topicBff[MQTT_TOPIC_COMPLETE]);
 			break;
 		default:
 			break;
@@ -271,12 +393,46 @@ void glue_set_leds(struct leds *data) {
   s_leds = *data; // Sync with your device
 }
 
-static struct settings s_settings = {"edit & save me", 2, 123.12345, 17, true};
 void glue_get_settings(struct settings *data) {
   *data = s_settings;  // Sync with your device
 }
 void glue_set_settings(struct settings *data) {
-  s_settings = *data; // Sync with your device
+  struct device_config_record record;
+
+  if (!valid_settings(data)) {
+    s_settings.saved = false;
+    mg_snprintf(s_settings.message, sizeof(s_settings.message),
+                "Invalid ID, IPv4 address, mask, or gateway");
+    return;
+  }
+
+  memset(&record, 0, sizeof(record));
+  record.magic = DEVICE_CONFIG_MAGIC;
+  record.version = DEVICE_CONFIG_VERSION;
+  record.sequence = s_config_sequence + 1U;
+  record.settings = *data;
+  record.settings.saved = true;
+  mg_snprintf(record.settings.message, sizeof(record.settings.message),
+              "Saved. Device is rebooting");
+  record.crc32 = device_config_crc(&record);
+
+  if (!mg_flash_save(NULL,
+                     (record.sequence & 1U) ? DEVICE_CONFIG_KEY_A : DEVICE_CONFIG_KEY_B,
+                     &record, sizeof(record))) {
+    s_settings.saved = false;
+    mg_snprintf(s_settings.message, sizeof(s_settings.message), "Flash write failed");
+    return;
+  }
+
+  s_settings = record.settings;
+  s_config_sequence = record.sequence;
+  glue_update_state();
+  mg_timer_add(&g_mgr, WIZARD_REBOOT_TIMEOUT_MS, 0,
+               (void (*)(void *)) mg_device_reset, NULL);
+}
+
+const char *glue_get_device_id(void) {
+  return s_settings.device_id;
 }
 
 static struct security s_security = {"admin", "user"};

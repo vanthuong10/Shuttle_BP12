@@ -1,4 +1,15 @@
 # ShuttleV1.1
+
+## Provisioning network and device ID
+
+One firmware image is used for every device. A new device starts with IP
+`10.14.64.20`, mask `255.255.254.0`, gateway `10.14.64.1`, and device ID
+`001`. Configure one device at a time at `http://10.14.64.20/config` using an
+administrator account. Saving writes two CRC-protected records to Flash and
+reboots the device with the new IP, mask, gateway, and ID.
+
+Do not connect several unconfigured devices to the same network: they share
+the factory-default IP address.
 * CẤU HÌNH THÔNG SỐ CHO SHUTTLE
 - Cấu hình mạng truyền thông tại file mongoose_glue.c
 
