@@ -6,9 +6,9 @@
 ../Application/Signal/sensorSignal.c:138:13:checkQrReaderConnecting	3
 ../Application/Signal/sensorSignal.c:159:13:motorStarting	4
 ../Application/Signal/sensorSignal.c:184:13:qrReaderStarting	4
-../Application/Signal/sensorSignal.c:206:6:HAL_UARTEx_RxEventCallback	2
-../Application/Signal/sensorSignal.c:215:6:switch_mode_register_callback	1
-../Application/Signal/sensorSignal.c:226:6:canOpenCallBack	4
-../Application/Signal/sensorSignal.c:239:6:canOpenInit	1
-../Application/Signal/sensorSignal.c:246:6:IOControl	9
-../Application/Signal/sensorSignal.c:286:6:sensorTaskInit	1
+../Application/Signal/sensorSignal.c:206:6:HAL_UARTEx_RxEventCallback	3
+../Application/Signal/sensorSignal.c:219:6:switch_mode_register_callback	1
+../Application/Signal/sensorSignal.c:230:6:canOpenCallBack	4
+../Application/Signal/sensorSignal.c:243:6:canOpenInit	1
+../Application/Signal/sensorSignal.c:250:6:IOControl	9
+../Application/Signal/sensorSignal.c:291:6:sensorTaskInit	1

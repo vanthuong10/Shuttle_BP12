@@ -13,9 +13,9 @@
 ../Application/Main_Program/Safety/safety.c:368:34:checkMotorError	16	static
 ../Application/Main_Program/Safety/safety.c:389:34:checkQrConnectionError	16	static
 ../Application/Main_Program/Safety/safety.c:423:34:checkOverLoad	16	static
-../Application/Main_Program/Safety/safety.c:442:34:checkOverTimeHydraulic	16	static
-../Application/Main_Program/Safety/safety.c:462:34:checkOverDistanceQr	40	static
-../Application/Main_Program/Safety/safety.c:494:14:getShuttleErrorStatus	24	static
-../Application/Main_Program/Safety/safety.c:541:13:safetyTask	16	static
-../Application/Main_Program/Safety/safety.c:573:6:safetyTaskInit	8	static
-../Application/Main_Program/Safety/safety.c:577:6:shuttleErrorState	4	static
+../Application/Main_Program/Safety/safety.c:442:34:checkOverTimeHydraulic	24	static
+../Application/Main_Program/Safety/safety.c:463:34:checkOverDistanceQr	40	static
+../Application/Main_Program/Safety/safety.c:495:14:getShuttleErrorStatus	32	static
+../Application/Main_Program/Safety/safety.c:546:13:safetyTask	16	static
+../Application/Main_Program/Safety/safety.c:578:6:safetyTaskInit	8	static
+../Application/Main_Program/Safety/safety.c:582:6:shuttleErrorState	4	static

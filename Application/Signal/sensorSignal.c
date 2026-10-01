@@ -205,15 +205,23 @@ static bool qrReaderStarting()
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-	if(huart->Instance == UART7)
+	if(huart->Instance == USART6)   // BMS pin
 	{
 		bmsContinute();
 	}
-	else if(huart->Instance == UART4)
+	else if(huart->Instance == UART7)  // Driver bơm thủy lực
 	{
 		hydraulicUartRxEventCallback(huart, Size);
 	}
 
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == UART7)  // Driver bơm thủy lực
+	{
+		hydraulicUartErrorCallback(huart);
+	}
 }
 
 void switch_mode_register_callback(ChangeMode cb)
@@ -254,9 +262,9 @@ void IOControl(void *argument)
 	qrInit();
 	MotorInit(&canOpen);
 	sensor_signal.qr_sensor = &qr ;
-	bmsInit(&huart7);
-	pumpInit(&huart4);
-	mb_ledInit(&huart6);
+	bmsInit(&huart6);
+	pumpInit(&huart7);
+	mb_ledInit(&huart4);
 	configCylinderLimitSensor(&sensor_signal.di_sensor.UP_LIMIT_PK1, &sensor_signal.di_sensor.UP_LIMIT_PK2, &sensor_signal.di_sensor.DOWN_LIMIT_PK1, &sensor_signal.di_sensor.DOWN_LIMIT_PK2,
 							  &sensor_signal.di_sensor.UP_LIMIT_WH1, &sensor_signal.di_sensor.UP_LIMIT_WH2, &sensor_signal.di_sensor.DOWN_LIMIT_WH1, &sensor_signal.di_sensor.DOWN_LIMIT_WH2);
 	if(!motorStarting()) { sensor_signal.motor_error_state = 1 ; }

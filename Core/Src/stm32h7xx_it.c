@@ -63,6 +63,7 @@ extern I2C_HandleTypeDef hi2c3;
 extern DMA_HandleTypeDef hdma_tim1_ch3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart7;
+extern UART_HandleTypeDef huart6;
 extern TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN EV */
@@ -251,19 +252,21 @@ void TIM6_DAC_IRQHandler(void)
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
+
+
 /**
-  * @brief This function handles Ethernet global interrupt.
+  * @brief This function handles USART6 global interrupt.
   */
-// void ETH_IRQHandler(void)
-// {
-//   /* USER CODE BEGIN ETH_IRQn 0 */
-// //
-//   /* USER CODE END ETH_IRQn 0 */
-//   HAL_ETH_IRQHandler(&heth);
-//   /* USER CODE BEGIN ETH_IRQn 1 */
-// //
-//   /* USER CODE END ETH_IRQn 1 */
-// }
+void USART6_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART6_IRQn 0 */
+
+  /* USER CODE END USART6_IRQn 0 */
+  HAL_UART_IRQHandler(&huart6);
+  /* USER CODE BEGIN USART6_IRQn 1 */
+
+  /* USER CODE END USART6_IRQn 1 */
+}
 
 /**
   * @brief This function handles I2C3 event interrupt.

@@ -517,25 +517,29 @@ static char* getShuttleErrorStatus()
 			return errorStatus(shuttle_error_table[i].errortype, shuttle_error_table[i].ErrorCode);
 		}
 	}
+	bool low_power_alarm = false ;  // cảnh báo pin yếu: kêu còi + báo mã, nhưng không dừng Shuttle
 	for(int y=0; y<=7; y++)
 		{
 			if(shuttle_alarm_table[y].alarmState)
 			{
-				if(shuttle_alarm_table[5].alarmState)
+				if(y == 5) // Cảnh báo pin yếu: kêu còi và báo mã, không đưa vào trạng thái lỗi
 				{
-					// no acction
-				}else
-				{
-					shuttle_is_error = true ;
-					shuttleSetStatus(SHUTTLE_IS_ERROR);
+					low_power_alarm = true ;
+					continue ;
 				}
+				shuttle_is_error = true ;
+				shuttleSetStatus(SHUTTLE_IS_ERROR);
 				ControlBuzzer(GPIO_PIN_SET); // bật còi báo
 				return alarmStatus(shuttle_alarm_table[y].alarmtype, shuttle_alarm_table[y].alarmCode);
 			}
 		}
 	shuttle_is_error = false;
 	shuttleUnSetStatus(SHUTTLE_IS_ERROR);
-	ControlBuzzer(GPIO_PIN_RESET);
+	ControlBuzzer(low_power_alarm ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	if(low_power_alarm)  // báo mã W30 lên màn hình/server, Shuttle vẫn chạy bình thường
+	{
+		return alarmStatus(shuttle_alarm_table[5].alarmtype, shuttle_alarm_table[5].alarmCode);
+	}
 	return NO_ERROR_STATUS;
 }
 

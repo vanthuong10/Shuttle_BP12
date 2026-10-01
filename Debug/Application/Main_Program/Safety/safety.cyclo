@@ -14,8 +14,8 @@
 ../Application/Main_Program/Safety/safety.c:389:34:checkQrConnectionError	3
 ../Application/Main_Program/Safety/safety.c:423:34:checkOverLoad	7
 ../Application/Main_Program/Safety/safety.c:442:34:checkOverTimeHydraulic	2
-../Application/Main_Program/Safety/safety.c:462:34:checkOverDistanceQr	7
-../Application/Main_Program/Safety/safety.c:494:14:getShuttleErrorStatus	6
-../Application/Main_Program/Safety/safety.c:541:13:safetyTask	6
-../Application/Main_Program/Safety/safety.c:573:6:safetyTaskInit	1
-../Application/Main_Program/Safety/safety.c:577:6:shuttleErrorState	3
+../Application/Main_Program/Safety/safety.c:463:34:checkOverDistanceQr	7
+../Application/Main_Program/Safety/safety.c:495:14:getShuttleErrorStatus	7
+../Application/Main_Program/Safety/safety.c:546:13:safetyTask	6
+../Application/Main_Program/Safety/safety.c:578:6:safetyTaskInit	1
+../Application/Main_Program/Safety/safety.c:582:6:shuttleErrorState	3

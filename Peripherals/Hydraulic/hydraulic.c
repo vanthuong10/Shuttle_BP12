@@ -38,6 +38,41 @@ static uint32_t pump_pending_stop_generation = 0;
 static volatile bool pump_is_running = false;
 static uint16_t pump_last_control_value = DBLS_CONTROL_FREE_STOP;
 
+#define PUMP_LOCK_TIMEOUT_MS     150U // chờ lấy quyền dùng bus RS485
+#define PUMP_RESP_TIMEOUT_MS     50U  // chờ driver trả lời 1 frame
+#define PUMP_FRAME_GAP_MS        3U   // khoảng lặng giữa 2 frame Modbus RTU (>= 1.75 ms)
+#define PUMP_SAVE_DELAY_MS       200U // chờ driver ghi flash sau lệnh lưu 0x81FF
+#define PUMP_CONFIG_MAX_RETRY    5U
+
+typedef enum {
+	PUMP_RESP_NONE = 0,  // không có phản hồi (timeout)
+	PUMP_RESP_OK,
+	PUMP_RESP_EXCEPTION
+} PumpRespStatus;
+
+static osSemaphoreId_t pumpRespSemaphoreHandle;
+static volatile uint8_t pump_pending_func = 0;   // function code đang chờ phản hồi, 0 = không chờ
+static volatile uint16_t pump_pending_reg = 0;
+static volatile uint8_t pump_resp_status = PUMP_RESP_NONE;
+static volatile uint16_t pump_resp_value = 0;
+static volatile bool pump_config_pending = true; // chưa xác nhận được cấu hình đã lưu trong driver
+static uint8_t pump_config_retry = 0;
+
+typedef struct
+{
+	uint16_t reg ;
+	uint16_t value ;
+	uint16_t mask ;  // chỉ so sánh các bit này khi đọc lại
+}PumpConfigItem;
+
+/* Cấu hình cố định của driver, được lưu vào flash driver nên chỉ cần ghi 1 lần */
+static const PumpConfigItem pump_config_table[] = {
+	{ DBLS_REG_CONTROL_STATUS,  DBLS_CONTROL_FREE_STOP,    DBLS_MODE_MASK }, // chế độ 0x07: Hall, điều khiển + tốc độ qua RS485
+	{ DBLS_REG_SPEED_CMD,       DBLS_SPEED_RPM_DEFAULT,    0xFFFFU },
+	{ DBLS_REG_ACCEL_DECEL,     DBLS_ACCEL_DECEL_VALUE,    0xFFFFU },
+	{ DBLS_REG_STARTUP_TORQUE,  DBLS_STARTUP_TORQUE_VALUE, 0xFFFFU },
+};
+
 struct HydraulicTableControl
 {
 	uint8_t valve1 ;
@@ -72,6 +107,7 @@ typedef struct
 
 static bool pumpSet(uint16_t add_reg, uint16_t val);
 static void pumpRead(void);
+static bool pumpConfigure(void);
 
 /**
  * @brief    Khởi tạo kết nối tới driver.
@@ -117,48 +153,87 @@ static void pumpStartRx(void)
 
 void pumpInit(UART_HandleTypeDef *uart)
 {
+	static const osMutexAttr_t pumpUartMutexAttr = { .name = "pumpUart", .attr_bits = osMutexRecursive };
 	driverPump.Serial = uart ;
 	pump_last_fault_rx_ms = hydraulicNowMs();
 	if(pumpUartMutexHandle == NULL)
 	{
-		pumpUartMutexHandle = osMutexNew(NULL);
+		pumpUartMutexHandle = osMutexNew(&pumpUartMutexAttr);
+	}
+	if(pumpRespSemaphoreHandle == NULL)
+	{
+		pumpRespSemaphoreHandle = osSemaphoreNew(1, 0, NULL);
 	}
 	pumpStartRx();
-	pumpSet(DBLS_REG_ACCEL_DECEL, DBLS_ACCEL_DECEL_VALUE);
-	pumpSet(DBLS_REG_SPEED_CMD, DBLS_SPEED_RPM_DEFAULT);
+	// Dừng bơm trước (phòng trường hợp MCU reset khi bơm đang chạy), sau đó mới kiểm tra cấu hình
 	if(pumpSet(DBLS_REG_CONTROL_STATUS, DBLS_CONTROL_FREE_STOP))
 	{
 		pump_last_control_value = DBLS_CONTROL_FREE_STOP;
 	}
+	pump_config_retry = 1;
+	pump_config_pending = !pumpConfigure();
 	HAL_GPIO_WritePin(outputGpio.valveL3.Port, outputGpio.valveL3.gpioPin, GPIO_PIN_RESET);
 }
 
 /**
- * @brief    Gửi tín hiệu điều khiển bơm bằng truyền thông modbus.
- * 			 sử dụng Funtion code: 0x06 Writing single Register
+ * @brief    Gửi 1 frame Modbus RTU và chờ driver trả lời.
+ * 			 RS485 half-duplex: phải chờ driver trả lời xong (hoặc timeout) và giữ khoảng lặng
+ * 			 giữa 2 frame, nếu không frame sau sẽ đè lên phản hồi của frame trước.
+ * @param func: 0x03 đọc / 0x06 ghi 1 thanh ghi
  * @param add_reg: địa chỉ thanh ghi
- * @param val: giá trị set
+ * @param val: giá trị ghi (0x06) hoặc số thanh ghi cần đọc (0x03)
+ * @param resp_status: trạng thái phản hồi (PumpRespStatus), có thể NULL
+ * @param resp_value: giá trị đọc được (0x03), có thể NULL
+ * @return   false nếu không gửi được frame
  */
-static bool pumpSet(uint16_t add_reg, uint16_t val)
+static bool pumpTransaction(uint8_t func, uint16_t add_reg, uint16_t val, uint8_t *resp_status, uint16_t *resp_value)
 {
-	if(driverPump.Serial == NULL || !pumpLockUart(50))
+	if(driverPump.Serial == NULL || !pumpLockUart(PUMP_LOCK_TIMEOUT_MS))
 	{
-		if(pump_is_running)
-		{
-			hydraulic_driver_comm_error = true;
-		}
 		return false;
 	}
+	bool rtos_running = osKernelGetState() == osKernelRunning && pumpRespSemaphoreHandle != NULL;
+	if(rtos_running)
+	{
+		while(osSemaphoreAcquire(pumpRespSemaphoreHandle, 0) == osOK) {} // bỏ tín hiệu cũ
+	}
 	driverPump.txData[0] = PUMP_ID;
-	driverPump.txData[1] = 0x06;
+	driverPump.txData[1] = func;
 	driverPump.txData[2] = (add_reg >> 8) & 0xFF;
 	driverPump.txData[3] = add_reg & 0xFF;
 	driverPump.txData[4] = (val >> 8) & 0xFF;
 	driverPump.txData[5] = val & 0xFF;
 	pumpAppendCrc(driverPump.txData, 6);
+	pump_resp_status = PUMP_RESP_NONE;
+	pump_pending_reg = add_reg;
+	pump_pending_func = func;
 	HAL_StatusTypeDef status = HAL_UART_Transmit(driverPump.Serial, driverPump.txData, 8, 100);
+	if(status == HAL_OK && rtos_running)
+	{
+		osSemaphoreAcquire(pumpRespSemaphoreHandle, PUMP_RESP_TIMEOUT_MS);
+	}
+	pump_pending_func = 0; // phản hồi đến muộn sẽ bị bỏ qua
+	if(resp_status != NULL) *resp_status = pump_resp_status;
+	if(resp_value != NULL) *resp_value = pump_resp_value;
+	if(rtos_running)
+	{
+		osDelay(PUMP_FRAME_GAP_MS);
+	}
 	pumpUnlockUart();
-	if(status != HAL_OK)
+	return status == HAL_OK;
+}
+
+/**
+ * @brief    Gửi tín hiệu điều khiển bơm bằng truyền thông modbus.
+ * 			 sử dụng Funtion code: 0x06 Writing single Register
+ * 			 Driver không trả lời vẫn coi là đã gửi (mất kết nối được phát hiện qua polling mã lỗi).
+ * @param add_reg: địa chỉ thanh ghi
+ * @param val: giá trị set
+ */
+static bool pumpSet(uint16_t add_reg, uint16_t val)
+{
+	uint8_t resp = PUMP_RESP_NONE;
+	if(!pumpTransaction(0x06, add_reg, val, &resp, NULL) || resp == PUMP_RESP_EXCEPTION)
 	{
 		if(pump_is_running)
 		{
@@ -170,32 +245,66 @@ static bool pumpSet(uint16_t add_reg, uint16_t val)
 }
 
 /**
- * @brief    Gửi tín hiệu request data bằng truyền thông modbus.
+ * @brief    Đọc 1 thanh ghi của driver (Funtion code 0x03).
+ * @return   true nếu driver trả lời hợp lệ
+ */
+static bool pumpReadReg(uint16_t add_reg, uint16_t *value)
+{
+	uint8_t resp = PUMP_RESP_NONE;
+	return pumpTransaction(0x03, add_reg, 0x0001, &resp, value) && resp == PUMP_RESP_OK;
+}
+
+/**
+ * @brief    Gửi tín hiệu request mã lỗi driver bằng truyền thông modbus.
  * 			 sử dụng Funtion code: 0x03 Read holding Register
  */
 static void pumpRead()
 {
-	if(driverPump.Serial == NULL || !pumpLockUart(50))
-	{
-		if(pump_is_running)
-		{
-			hydraulic_driver_comm_error = true;
-		}
-		return;
-	}
-	driverPump.txData[0] = PUMP_ID;
-	driverPump.txData[1] = 0x03;
-	driverPump.txData[2] = (DBLS_REG_FAULT_CODE >> 8) & 0xFF;
-	driverPump.txData[3] = DBLS_REG_FAULT_CODE & 0xFF;
-	driverPump.txData[4] = 0x00;
-	driverPump.txData[5] = 0x01;
-	pumpAppendCrc(driverPump.txData, 6);
 	pump_last_fault_request_ms = hydraulicNowMs();
-	if(HAL_UART_Transmit(driverPump.Serial, driverPump.txData, 8, 100) != HAL_OK && pump_is_running)
+	if(!pumpTransaction(0x03, DBLS_REG_FAULT_CODE, 0x0001, NULL, NULL) && pump_is_running)
 	{
 		hydraulic_driver_comm_error = true;
 	}
-	pumpUnlockUart();
+}
+
+/**
+ * @brief    Đọc lại cấu hình trong driver, chỉ ghi các thanh ghi bị sai rồi lưu flash (0x81FF = 0xFFFF).
+ * 			 Driver đã lưu đúng thì chỉ đọc, không ghi -> không tốn chu kỳ ghi flash mỗi lần khởi động
+ * 			 và các lần chạy sau không cần set lại tốc độ/gia tốc.
+ * @return   true nếu cấu hình trong driver đã đúng và đã được lưu
+ */
+static bool pumpConfigure(void)
+{
+	bool changed = false;
+	for(uint8_t i = 0; i < sizeof(pump_config_table) / sizeof(pump_config_table[0]); i++)
+	{
+		const PumpConfigItem *item = &pump_config_table[i];
+		uint16_t value = 0;
+		if(!pumpReadReg(item->reg, &value)) return false;
+		if((value & item->mask) == (item->value & item->mask)) continue;
+		if(pump_is_running) return false; // không đổi cấu hình khi bơm đang chạy
+		if(!pumpSet(item->reg, item->value)) return false;
+		if(item->reg == DBLS_REG_CONTROL_STATUS)
+		{
+			pump_last_control_value = item->value;
+		}
+		if(!pumpReadReg(item->reg, &value) || (value & item->mask) != (item->value & item->mask)) return false;
+		changed = true;
+	}
+	if(changed)
+	{
+		if(pump_is_running || !pumpLockUart(PUMP_LOCK_TIMEOUT_MS)) return false;
+		// Giữ bus trong lúc driver ghi flash để không task nào gửi lệnh chen vào
+		bool saved = pumpSet(DBLS_REG_SAVE_PARAMS, DBLS_SAVE_PARAMS_VALUE);
+		if(saved)
+		{
+			osDelay(PUMP_SAVE_DELAY_MS);
+			printf("Pump driver: da luu cau hinh vao flash\n");
+		}
+		pumpUnlockUart();
+		return saved;
+	}
+	return true;
 }
 
 static bool pumpWriteControl(uint16_t control)
@@ -221,9 +330,14 @@ static void pumpRun(uint16_t control)
 	pump_command_generation++;
 	if(!pump_is_running || pump_last_control_value != control)
 	{
-		// Driver không giữ thanh ghi tốc độ (chỉ lưu khi ghi 0xFFFF vào 0x81FF), mặc định về 0 RPM.
-		// Set lại tốc độ trước khi cấp lệnh chạy để bơm luôn chạy đúng DBLS_SPEED_RPM_DEFAULT.
-		if(!pumpSet(DBLS_REG_SPEED_CMD, DBLS_SPEED_RPM_DEFAULT))
+		// Tốc độ/gia tốc đã được lưu trong flash driver (pumpConfigure). Chỉ khi chưa xác nhận được
+		// cấu hình thì mới set lại tốc độ trước khi chạy như cách cũ.
+		if(pump_config_pending && !pumpSet(DBLS_REG_SPEED_CMD, DBLS_SPEED_RPM_DEFAULT))
+		{
+			return;
+		}
+		// Manual driver: đổi chiều F/R phải tắt EN trước
+		if(pump_is_running && !pumpWriteControl(DBLS_CONTROL_FREE_STOP))
 		{
 			return;
 		}
@@ -268,10 +382,11 @@ static void pumpGetDriverErrorSnapshot(uint8_t *fault_code, bool *comm_error)
 	__set_PRIMASK(primask);
 }
 
-static void pumpUpdateCommTimeout(uint32_t now)
+static void pumpUpdateCommTimeout(void)
 {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
+	uint32_t now = hydraulicNowMs(); // lấy sau khi khóa ngắt để không nhỏ hơn pump_last_fault_rx_ms
 	if(pump_is_running && pump_last_fault_request_ms != 0U && (now - pump_last_fault_rx_ms) > 1000U)
 	{
 		hydraulic_driver_comm_error = true;
@@ -289,20 +404,46 @@ void hydraulicUartRxEventCallback(UART_HandleTypeDef *uart, uint16_t size)
 	{
 		uint16_t crc = crc16_modbus(driverPump.rxData, size - 2U);
 		uint16_t rx_crc = driverPump.rxData[size - 2U] | ((uint16_t) driverPump.rxData[size - 1U] << 8);
-		if(crc == rx_crc && driverPump.rxData[0] == PUMP_ID)
+		if(crc == rx_crc && driverPump.rxData[0] == PUMP_ID && pump_pending_func != 0U)
 		{
-			if(driverPump.rxData[1] == 0x03U && size >= 7U && driverPump.rxData[2] == 0x02U)
+			uint8_t func = driverPump.rxData[1];
+			bool done = false;
+			if(func == 0x03U && pump_pending_func == 0x03U && size >= 7U && driverPump.rxData[2] == 0x02U)
 			{
-				pump_fault_code = driverPump.rxData[4];
-				pump_last_fault_rx_ms = hydraulicNowMs();
-				hydraulic_driver_comm_error = false;
+				pump_resp_value = ((uint16_t) driverPump.rxData[3] << 8) | driverPump.rxData[4];
+				if(pump_pending_reg == DBLS_REG_FAULT_CODE)
+				{
+					pump_fault_code = driverPump.rxData[4];
+					pump_last_fault_rx_ms = hydraulicNowMs();
+					hydraulic_driver_comm_error = false;
+				}
+				pump_resp_status = PUMP_RESP_OK;
+				done = true;
 			}
-			else if((driverPump.rxData[1] & 0x80U) != 0U && pump_is_running)
+			else if(func == 0x06U && pump_pending_func == 0x06U && size >= 8U)
 			{
-				hydraulic_driver_comm_error = true;
+				pump_resp_status = PUMP_RESP_OK;
+				done = true;
+			}
+			else if((func & 0x80U) != 0U)
+			{
+				if(pump_is_running)
+				{
+					hydraulic_driver_comm_error = true;
+				}
+				pump_resp_status = PUMP_RESP_EXCEPTION;
+				done = true;
+			}
+			if(done)
+			{
+				pump_pending_func = 0;
+				if(pumpRespSemaphoreHandle != NULL)
+				{
+					osSemaphoreRelease(pumpRespSemaphoreHandle);
+				}
 			}
 		}
-		else if(pump_is_running)
+		else if(crc != rx_crc && pump_is_running)
 		{
 			hydraulic_driver_comm_error = true;
 		}
@@ -310,11 +451,27 @@ void hydraulicUartRxEventCallback(UART_HandleTypeDef *uart, uint16_t size)
 	pumpStartRx();
 }
 
+/**
+ * @brief    Lỗi UART (overrun/noise...) làm HAL hủy nhận ReceiveToIdle -> bật lại để không mất kết nối driver.
+ */
+void hydraulicUartErrorCallback(UART_HandleTypeDef *uart)
+{
+	if(driverPump.Serial == NULL || uart->Instance != driverPump.Serial->Instance)
+	{
+		return;
+	}
+	pumpStartRx();
+}
+
 void hydraulicDriverPoll(void)
 {
-	uint32_t now = hydraulicNowMs();
+	if(pump_config_pending && !pump_is_running && pump_config_retry < PUMP_CONFIG_MAX_RETRY)
+	{
+		pump_config_retry++;
+		pump_config_pending = !pumpConfigure();
+	}
 	pumpRead();
-	pumpUpdateCommTimeout(now);
+	pumpUpdateCommTimeout();
 }
 /**
  * @brief    Xuất tín hiệu điều khiển xylanh.
@@ -477,6 +634,9 @@ void resetErrorHydraulic(){
 	hydraulic_emg = false ;
 	hydraulic_driver_comm_error = false;
 	pump_fault_code = 0;
+	// Driver có thể đã bị mất nguồn (EMG/lỗi) -> đọc lại cấu hình ở lần poll kế tiếp
+	pump_config_pending = true;
+	pump_config_retry = 0;
 	if(pumpWriteControl(DBLS_CONTROL_FREE_STOP))
 	{
 		pump_is_running = false;

@@ -1,6 +1,6 @@
-../Application/Update_Data/update_data.c:21:9:getPalletLiftingStatus	4	static
-../Application/Update_Data/update_data.c:31:13:getInfoBatery	4	static
-../Application/Update_Data/update_data.c:43:13:getInfoQrReader	4	static
-../Application/Update_Data/update_data.c:49:6:ws_transmit_timer	616	static
-../Application/Update_Data/update_data.c:122:13:inforUpdatetask	1000	static
-../Application/Update_Data/update_data.c:176:6:dataUpdateTaskInit	8	static
+../Application/Update_Data/update_data.c:22:9:getPalletLiftingStatus	4	static
+../Application/Update_Data/update_data.c:32:13:getInfoBatery	4	static
+../Application/Update_Data/update_data.c:44:13:getInfoQrReader	4	static
+../Application/Update_Data/update_data.c:50:6:ws_transmit_timer	616	static
+../Application/Update_Data/update_data.c:123:13:inforUpdatetask	1000	static
+../Application/Update_Data/update_data.c:177:6:dataUpdateTaskInit	8	static

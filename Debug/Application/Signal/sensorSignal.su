@@ -7,8 +7,8 @@
 ../Application/Signal/sensorSignal.c:159:13:motorStarting	16	static
 ../Application/Signal/sensorSignal.c:184:13:qrReaderStarting	16	static
 ../Application/Signal/sensorSignal.c:206:6:HAL_UARTEx_RxEventCallback	16	static
-../Application/Signal/sensorSignal.c:215:6:switch_mode_register_callback	16	static
-../Application/Signal/sensorSignal.c:226:6:canOpenCallBack	16	static
-../Application/Signal/sensorSignal.c:239:6:canOpenInit	8	static
-../Application/Signal/sensorSignal.c:246:6:IOControl	40	static
-../Application/Signal/sensorSignal.c:286:6:sensorTaskInit	8	static
+../Application/Signal/sensorSignal.c:219:6:switch_mode_register_callback	16	static
+../Application/Signal/sensorSignal.c:230:6:canOpenCallBack	16	static
+../Application/Signal/sensorSignal.c:243:6:canOpenInit	8	static
+../Application/Signal/sensorSignal.c:250:6:IOControl	40	static
+../Application/Signal/sensorSignal.c:291:6:sensorTaskInit	8	static

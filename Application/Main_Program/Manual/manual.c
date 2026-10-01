@@ -152,6 +152,7 @@ void manualTaskResume()
 	if (manualTask_suspended_state) {
 		manualTask_suspended_state = false ;
 		motorControl(false, false, 0, 0);
+		app_data.buttonState = 0 ;
 		osDelay(10);
 		resetManualMode();
 		osThreadResume(ManualTaskHandle);

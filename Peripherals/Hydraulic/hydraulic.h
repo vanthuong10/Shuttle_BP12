@@ -18,9 +18,14 @@ extern "C" {
 #define PUMP_ID 1
 
 #define DBLS_REG_CONTROL_STATUS 0x8106U
+#define DBLS_REG_STARTUP_TORQUE 0x8109U
 #define DBLS_REG_ACCEL_DECEL    0x810BU
 #define DBLS_REG_SPEED_CMD      0x8110U
+#define DBLS_REG_SAVE_PARAMS    0x81FFU /* Ghi 0xFFFF để driver lưu các thanh ghi 0x81xx vào flash */
 #define DBLS_REG_FAULT_CODE     0x820FU
+
+#define DBLS_SAVE_PARAMS_VALUE  0xFFFFU
+#define DBLS_MODE_MASK          0xFF00U /* Byte cao của 0x8106 = chế độ làm việc */
 
 /* Reg 0x8106: High byte = Operation Mode (0x07 = Hall, internal control, internal speed, closed-loop)
  *             Low byte  = Control Status (Bit0 EN Run, Bit1 F/R Reverse, Bit2 BK Brake) */
@@ -29,10 +34,12 @@ extern "C" {
 #define DBLS_CONTROL_BRAKE_STOP  0x0704U /* BK=1: phanh điện, hiện không dùng */
 #define DBLS_CONTROL_FREE_STOP   0x0700U /* EN=0, BK=0: dừng tự nhiên (motor trôi theo quán tính) */
 
-#define DBLS_SPEED_RPM_DEFAULT 3000U
+#define DBLS_SPEED_RPM_DEFAULT 3500U
 /* Reg 0x810B: High byte = Deceleration 1..0xFF, Low byte = Acceleration 1..0xFF, 25 RPM per unit.
  * Giá trị càng lớn ramp càng nhanh -> 0xFFFF là tăng/giảm tốc nhanh nhất (mặc định driver 0xC8C8). */
 #define DBLS_ACCEL_DECEL_VALUE 0xFFFFU
+/* Reg 0x8109: mô-men khởi động, mặc định driver 0x00C0. Tăng ~50% để bơm khởi động dứt khoát khi còn áp dư trong đường dầu. */
+#define DBLS_STARTUP_TORQUE_VALUE 0x0120U
 
 #define HYDRAULIC_ERROR_NONE          0U
 #define HYDRAULIC_ERROR_OVERLOAD      1U
@@ -66,6 +73,7 @@ struct DriverPump
 void hydraulicTaskInit();
 void pumpInit(UART_HandleTypeDef *uart);
 void hydraulicUartRxEventCallback(UART_HandleTypeDef *uart, uint16_t size);
+void hydraulicUartErrorCallback(UART_HandleTypeDef *uart);
 void hydraulicDriverPoll(void);
 void configCylinderLimitSensor(uint8_t* limitUpPallet1, uint8_t* limitUpPallet2, uint8_t* limitDownPallet1, uint8_t* limitDownPallet2,
 							   uint8_t* limitUpWheel1, uint8_t* limitUpWheel2, uint8_t* limitDownWheel1, uint8_t* limitDownWheel2) ;
