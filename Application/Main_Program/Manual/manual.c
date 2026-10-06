@@ -109,9 +109,14 @@ void Manualtask(void *argument)
 //				acc_low = false;
 //			}
 //		}
-		if (!acc_low) {
-			SDOProfileAcc(0.01, MotorID[0]); // thay đổi gia tốc chậm
-			acc_low = true;
+		if (m_error) {
+			acc_low = false;
+		} else if (!acc_low) {
+			acc_low = SDOProfileAcc(0.01, MotorID[0]); // thay đổi gia tốc chậm
+		}
+		if (m_error || manualTask_suspended_state) {
+			target_speed = 0;
+			dir = 0;
 		}
 		motorControl(true, m_error, dir, target_speed);
 		uint64_t now = mg_millis();

@@ -67,6 +67,13 @@ GPIO_UserHandle InRailRight         = { .Port = GPIOH, .gpioPin = GPIO_PIN_9  };
 GPIO_UserHandle InRailBehind        = { .Port = GPIOD, .gpioPin = GPIO_PIN_11 }; // X34 PD11 – Ray sau
 GPIO_UserHandle InRailLeft          = { .Port = GPIOJ, .gpioPin = GPIO_PIN_7  }; // X35 PJ7  – Ray trái
 
+//front
+GPIO_UserHandle UpPalletSwitch3     = { .Port = GPIOG, .gpioPin = GPIO_PIN_2  }; // X27 PG2 – Hành trình pallet 3 trên
+GPIO_UserHandle DownPalletSwitch3   = { .Port = GPIOK, .gpioPin = GPIO_PIN_1 }; // X26 PK1 – Hành trình pallet 3 dưới
+//behind
+GPIO_UserHandle UpPalletSwitch4     = { .Port = GPIOJ, .gpioPin = GPIO_PIN_8  }; // X8 PJ8 – Hành trình pallet 4 trên
+GPIO_UserHandle DownPalletSwitch4   = { .Port = GPIOJ, .gpioPin = GPIO_PIN_9 }; // X9 PJ9 – Hành trình pallet 4 dưới
+
 
 static SENSOR_STATUS inputSignal ;
 /**
@@ -93,10 +100,10 @@ void DigitalSensorRead(SENSOR_STATUS *sensor)
 	inputSignal.UP_LIMIT_WH1 	=  HAL_GPIO_ReadPin(UpWheelSwitch1.Port, UpWheelSwitch1.gpioPin);
 	inputSignal.DOWN_LIMIT_WH2 	=  HAL_GPIO_ReadPin(DownWheelSwitch2.Port, DownWheelSwitch2.gpioPin);
 	inputSignal.UP_LIMIT_WH2 	=  HAL_GPIO_ReadPin(UpWheelSwitch2.Port, UpWheelSwitch2.gpioPin);
-	inputSignal.UP_LIMIT_PK2    =  HAL_GPIO_ReadPin(UpPalletSwitch2.Port, UpPalletSwitch2.gpioPin);
-	inputSignal.DOWN_LIMIT_PK2  =  HAL_GPIO_ReadPin(DownPalletSwitch2.Port, DownPalletSwitch2.gpioPin);
-	inputSignal.UP_LIMIT_PK1    =  HAL_GPIO_ReadPin(UpPalletSwitch1.Port, UpPalletSwitch1.gpioPin);
-	inputSignal.DOWN_LIMIT_PK1  =  HAL_GPIO_ReadPin(DownPalletSwitch1.Port, DownPalletSwitch1.gpioPin);
+	inputSignal.UP_LIMIT_PK2    =  HAL_GPIO_ReadPin(UpPalletSwitch2.Port, UpPalletSwitch2.gpioPin) || HAL_GPIO_ReadPin(UpPalletSwitch3.Port, UpPalletSwitch3.gpioPin);
+	inputSignal.DOWN_LIMIT_PK2  =  HAL_GPIO_ReadPin(DownPalletSwitch2.Port, DownPalletSwitch2.gpioPin) || HAL_GPIO_ReadPin(DownPalletSwitch3.Port, DownPalletSwitch3.gpioPin);
+	inputSignal.UP_LIMIT_PK1    =  HAL_GPIO_ReadPin(UpPalletSwitch1.Port, UpPalletSwitch1.gpioPin) || HAL_GPIO_ReadPin(UpPalletSwitch4.Port, UpPalletSwitch4.gpioPin);
+	inputSignal.DOWN_LIMIT_PK1  =  HAL_GPIO_ReadPin(DownPalletSwitch1.Port, DownPalletSwitch1.gpioPin) || HAL_GPIO_ReadPin(DownPalletSwitch4.Port, DownPalletSwitch4.gpioPin);
 	inputSignal.EMG_BUTTON 		=  HAL_GPIO_ReadPin(EmgSwitch.Port, EmgSwitch.gpioPin) == 0 ? HIGH : LOW;
 	inputSignal.RF_FORWARD 		=  HAL_GPIO_ReadPin(RfForwardSwitch.Port, RfForwardSwitch.gpioPin);
 	inputSignal.RF_REVERSE		=  HAL_GPIO_ReadPin(RfReverseSwitch.Port, RfReverseSwitch.gpioPin);
